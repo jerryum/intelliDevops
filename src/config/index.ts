@@ -32,4 +32,7 @@ export default {
       poolMax: Number(process.env.NC_CRON_DB_CONFIG_POOL_MAX),
     },
   },
+  auth: {
+    jwtSecretKey: process.env.NC_CRON_JWT_SECRET_KEY
+  },
 };
