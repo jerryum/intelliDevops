@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { CreateCronScheduleDto } from '@/modules/Scheduler/dto/scheduler.dto'
+import { CreateCronScheduleDto } from '@/modules/Scheduler/dtos/scheduler.dto'
 import SchedulerService from '@/modules/Scheduler/services/scheduler.service';
 
 class SchedulerController {
@@ -10,21 +10,18 @@ class SchedulerController {
        
        const name = req.body.name;
        const summary = req.body.summary;
-       const cronTab = req.body.crontab;
-       const apiUrl = req.body.apiurl;
-       const clusterUuid = req.body.apiparams.param1;
-       const templateUuid = req.body.apiparams.param2;
-       const receiveChannel =req.body.apiparams.param3;
-       const apijson = req.body.apijson;
-  
-       const createCronRequest: CreateCronScheduleDto = {name,summary, apijson, cronTab, apiUrl, clusterUuid, templateUuid, receiveChannel};
+       const cronTab = req.body.cronTab;
+       const apiUrl = req.body.apiUrl;
+       const apiBody = req.body.apiBody;
+
+       const createCronRequest: CreateCronScheduleDto = {name,summary, cronTab, apiUrl, apiBody};
 
        const responseCronCreate = await this.schedulerService.CreateCronSchedule (createCronRequest);
        res.status(200).json ({ data: responseCronCreate, message: 'Schedule request has been initiated'});
 
     } catch (error) {
       next (error);
-    }  
+    }
 
   };
 

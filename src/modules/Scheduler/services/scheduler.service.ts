@@ -1,10 +1,12 @@
 import { HttpException } from '@/common/exceptions/HttpException';
-import { CreateCronScheduleDto } from '../dto/scheduler.dto';
+import { CreateCronScheduleDto } from '../dtos/scheduler.dto';
 import { isEmpty } from '@/common/utils/util';
 import axios from 'axios'; 
-import cron from 'node-cron';
+//import cron from 'node-cron';
 import scheduler from 'node-schedule';
-import { ISchedule } from '@/common/interfaces/schedule.interface';
+import { ISchedule, IScheduleResponse } from '@/common/interfaces/schedule.interface';
+import DB from '@/database';
+//import { NOW } from 'sequelize';
 
 
 //import { ISchedule } from '@/common/interfaces/schedule.interface'
@@ -12,43 +14,73 @@ import { ISchedule } from '@/common/interfaces/schedule.interface';
 
 
 class SchedulerService {
+  public scheduler = DB.Scheduler; 
 
-  public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<ISchedule> {
-    if (isEmpty(CronRequestData)) throw new HttpException(400, 'Schedule request data cannot be blank');
+  public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<IScheduleResponse> {
+    if (isEmpty(CronRequestData)) throw new HttpException(400, 'Scheduling request data cannot be blank');
 
-    const job_name = CronRequestData.name
-    const summary = CronRequestData.summary
-    const cronTab = CronRequestData.cronTab; 
-    const apiUrl = CronRequestData.apiUrl; 
-    const clusterUuid = CronRequestData.clusterUuid; 
-    const templateUuid = CronRequestData.templateUuid;
-    const apijson = CronRequestData.apijson; 
+    const cronTab = CronRequestData.cronTab;
+    const apiUrl = CronRequestData.apiUrl;
+    const {name, summary, apiBody} = CronRequestData;
+    var apiKey = 0;
+    var apiKeyString = "";
+    var cancelFlag = 0;
+
+    await this.scheduler.create(
+          {
+            scheduleName: name,
+            scheduleSummary: summary,
+            scheduleCronTab: cronTab,
+            scheduleApiUrl: apiUrl,
+            scheduleApiBody: apiBody,
+            createdAt: new Date(),
+          }) 
+        .then (
+           (result) => {
+               apiKey = result.scheduleKey;
+               apiKeyString = apiKey.toString(); 
+               console.log(apiKey);
+           },
+           (error) => {
+            console.log("Job can't be saved due to unexpoected error: ", error);
+            throw new HttpException(407, 'Scheduling request cannot be saved due to unexpoected error');
+           });
+
+    let apiMessage = {};
     
-    const apiMessage = {
-        name: job_name,
-        cluster_uuid: clusterUuid,
-        template_uuid: templateUuid,
-        steps: [apijson],
-        summary: summary };
+    apiMessage = { name, summary,  ...apiBody};
+    //apiMessage = { name, summary};
 
-//       const task = cron.schedule(cronTab, function(){
-    const task = scheduler.scheduleJob(job_name, cronTab, function(){                  
-         console.log(`Job ${job_name} is inititaed`); 
-         console.log(apiUrl);
+    const task = scheduler.scheduleJob(apiKeyString, cronTab, function(){                  
+         console.log(`Job ${apiKey} is inititaed`); 
+         
          axios.post(apiUrl,apiMessage)
           .then
           (
             (response) => {
               const status = response.data.status;
-              console.log(`Job ${job_name} is processed`);
+              console.log(`Job ${apiKey} is processed`, status);
             },
             (error) => {
-              task.cancel;
-              console.log('Job stopped due to unexpoected error: ', error);
+                task.cancel();
+                cancelFlag = 1;     
+                console.log(`#######################Job ${apiKey} cancelled due to unexpoected error: `, error);
             })
         }
     );
-    const result: ISchedule = {job_name: job_name};
+     
+    if (cancelFlag === 1) {
+        await this.scheduler.update(
+            {cancelledAt: new Date(), },
+            {where: {scheduleKey: apiKey}},
+        )
+        .then (
+            (result: any) => {console.log("#########################db updated - cancelled job", result); },
+            (error: any)  => {console.log("db update failed - cancelled job", error);} 
+        );
+    };
+
+    const result: IScheduleResponse = {jobKey: apiKey};
     return result;
   }
 }

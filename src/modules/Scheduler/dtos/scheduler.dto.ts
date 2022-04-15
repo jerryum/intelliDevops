@@ -10,17 +10,11 @@ public cronTab: string;
 public apiUrl: string;
 
 @IsNotEmpty()
-public clusterUuid: string;
-
-@IsNotEmpty()
-public templateUuid: string;
-
-public receiveChannel: string;
-
-@IsNotEmpty()
 public name: string;
 
 public summary: string;
 
-public apijson: object;
+public apiBody: object;
+
+//public scheduleKey: number;
 }

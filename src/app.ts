@@ -8,7 +8,7 @@ import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import session from 'express-session';
-// import DB from '@/database';
+import DB from '@/database';
 import { Routes } from '@/common/interfaces/routes.interface';
 import errorMiddleware from '@/common/middlewares/error.middleware';
 import { logger, stream } from '@/common/utils/logger';
@@ -47,7 +47,7 @@ class App {
   }
 
   private connectToDatabase() {
-    /*
+    
     DB.sequelize
       .sync({ force: false })
       .then(() => {
@@ -56,7 +56,7 @@ class App {
       .catch(err => {
         console.log(err);
       });
-    */
+    
   }
 
   private initializeMiddlewares() {

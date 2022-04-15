@@ -1,9 +1,9 @@
 import Sequelize from 'sequelize';
-import { writeFileSync } from 'fs';
+//import { writeFileSync } from 'fs';
 import { logger } from '@/common/utils/logger';
-
+import schedulerModel, { ScheduleModel } from '@/modules/Scheduler/models/scheduler.model';
 import config from 'config';
-import InitialRecordService from './initialRecord';
+//import InitialRecordService from './initialRecord';
 
 const host = config.db.mariadb.host;
 const port = config.db.mariadb.port || 3306;
@@ -14,6 +14,7 @@ const pool = {
   min: config.db.mariadb.poolMin,
   max: config.db.mariadb.poolMax,
 };
+
 const sequelize = new Sequelize.Sequelize(database, user, password, {
   host,
   port,
@@ -39,7 +40,17 @@ const sequelize = new Sequelize.Sequelize(database, user, password, {
 sequelize.authenticate();
 
 const DB = {
+  Scheduler: schedulerModel(sequelize),
   sequelize, // connection instance (RAW queries)
 };
+
+DB.sequelize
+.sync({ force: false })
+.then(() => {
+  console.log('Database connected successfully');
+})
+.catch(err => {
+  console.log(err);
+});
 
 export default DB;
