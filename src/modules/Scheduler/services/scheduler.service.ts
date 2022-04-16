@@ -1,20 +1,57 @@
 import { HttpException } from '@/common/exceptions/HttpException';
-import { CreateCronScheduleDto } from '../dtos/scheduler.dto';
+import { CreateCronScheduleDto, ICancelScheduledCronTaskDto } from '../dtos/scheduler.dto';
 import { isEmpty } from '@/common/utils/util';
 import axios from 'axios'; 
-//import cron from 'node-cron';
 import scheduler from 'node-schedule';
-import { ISchedule, IScheduleResponse } from '@/common/interfaces/schedule.interface';
+import { IScheduleResponse,ISchedule } from '@/common/interfaces/schedule.interface';
 import DB from '@/database';
-//import { NOW } from 'sequelize';
-
-
-//import { ISchedule } from '@/common/interfaces/schedule.interface'
-//import DB from '@/database';
+import { schedule } from 'node-cron';
 
 
 class SchedulerService {
   public scheduler = DB.Scheduler; 
+
+
+  public async getScheduledCronTaskbyApiKey(apiKey: number): Promise<ISchedule> {
+
+    if (isEmpty(apiKey)) throw new HttpException(400, 'Missing apiKey');
+
+    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleKey: apiKey } });
+    if (!getScheduledCronTask) throw new HttpException(409, "can't find the apiKey information in the database");
+
+    //console.log(getScheduledCronTask);
+
+    const target_job= scheduler.scheduledJobs[apiKey];
+    if (!target_job) throw new HttpException(409, "the job is not in crontab");
+    
+    return getScheduledCronTask;
+  }
+
+
+
+  public async cancelScheduledCronTask(apiKey: number) {
+
+    if (isEmpty(apiKey)) throw new HttpException(400, 'Missing apiKey');
+ 
+    try {
+         const target_job = scheduler.scheduledJobs[apiKey]; 
+         target_job.cancel();
+         console.log("job cancelled");
+    } catch(error)
+      {throw new HttpException(400, 'Fail to cancel the requested schedule ');}; 
+
+    const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(),}
+    await this.scheduler.update({...updateDataSet},{ where: { scheduleKey: apiKey }})
+    .then (
+        (result: any) => {console.log("cancelled job - db updated", result); },
+        (error: any)  => {console.log("cancelled job - db update failed", error);
+                          throw new HttpException(409, "can't update status of scheduler db");} 
+    );
+
+  }
+
+
+
 
   public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<IScheduleResponse> {
     if (isEmpty(CronRequestData)) throw new HttpException(400, 'Scheduling request data cannot be blank');
@@ -51,6 +88,8 @@ class SchedulerService {
     apiMessage = { name, summary,  ...apiBody};
     //apiMessage = { name, summary};
 
+    
+
     const task = scheduler.scheduleJob(apiKeyString, cronTab, function(){                  
          console.log(`Job ${apiKey} is inititaed`); 
          
@@ -71,7 +110,7 @@ class SchedulerService {
      
     if (cancelFlag === 1) {
         await this.scheduler.update(
-            {cancelledAt: new Date(), },
+            {updatedAt: new Date(), cancelledAt: new Date(), },
             {where: {scheduleKey: apiKey}},
         )
         .then (
@@ -80,7 +119,7 @@ class SchedulerService {
         );
     };
 
-    const result: IScheduleResponse = {jobKey: apiKey};
+    const result: IScheduleResponse = {scheduleKey: apiKey};
     return result;
   }
 }

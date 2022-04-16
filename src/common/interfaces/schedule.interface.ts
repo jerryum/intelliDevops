@@ -1,5 +1,5 @@
 export interface IScheduleResponse {
-    jobKey: number;
+    scheduleKey: number;
 }
 
 export interface ISchedule {
