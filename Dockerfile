@@ -14,7 +14,7 @@ EXPOSE 5001
 ##Development build stage
 FROM common-build-stage as development-build-stage
 
-RUN npm install
+COPY  docker-entrypoint.sh /usr/src/app/docker-entrypoint.sh
 
 COPY . /usr/src/app/
 
