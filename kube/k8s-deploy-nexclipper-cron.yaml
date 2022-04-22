@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${APP_IMAGE_NAME}-configmap
+  labels:
+    app: ${APP_IMAGE_NAME}
+data:
+  NC_CRON_PORT: "5001"
+  NC_CRON_ENV: development
+  NC_CRON_DB_CONFIG_HOST: "ncdb-mariadb-primary.mariadb.svc.cluster.local"
+  NC_CRON_DB_CONFIG_USER: root
+  NC_CRON_DB_CONFIG_DB_NAME: nc_cron
+  NC_CRON_DB_CONFIG_POOL_MIN: "1"
+  NC_CRON_DB_CONFIG_POOL_MAX: "5"
+  NC_CRON_JWT_SECRET_KEY: test123!
+  NC_CRON_LOG_FORMAT: combined
+  NC_CRON_CORS_ORIGIN: "true"
+  NC_CRON_CORS_CREDENTIALS: "true"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APP_IMAGE_NAME}
+spec:
+  selector:
+    matchLabels:
+      app: ${APP_IMAGE_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${APP_IMAGE_NAME}
+    spec:
+      containers:
+      - name: ${APP_IMAGE_NAME}
+        image: ${IMG_TAG_TO_DEPLOY}
+        resources: {}
+        livenessProbe:
+          tcpSocket:
+            port: 5001
+          initialDelaySeconds: 15
+          timeoutSeconds: 15
+        envFrom:
+          - configMapRef:
+              name: ${APP_IMAGE_NAME}-configmap
+        env:
+          - name: NC_CRON_DB_CONFIG_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: ncdb-mariadb
+                key: mariadb-root-password
+        ports:
+        - containerPort: 5001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APP_IMAGE_NAME}
+spec:
+  selector:
+    app: ${APP_IMAGE_NAME}
+  ports:
+  - port: 5001
+    targetPort: 5001
