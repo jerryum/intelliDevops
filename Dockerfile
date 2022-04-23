@@ -14,7 +14,7 @@ EXPOSE 5001
 ##Development build stage
 FROM common-build-stage as development-build-stage
 
-COPY npm ci
+RUN npm ci
 
 COPY . /usr/src/app/
 
