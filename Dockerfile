@@ -3,7 +3,7 @@ FROM node:lts-alpine as common-build-stage
 
 WORKDIR /usr/src/app
 
-COPY  ./package.json   /usr/src/app/
+COPY  ./package.json ./package-lock.json  /usr/src/app/
 
 COPY  docker-entrypoint.sh /usr/src/app/docker-entrypoint.sh
 
@@ -14,7 +14,7 @@ EXPOSE 5001
 ##Development build stage
 FROM common-build-stage as development-build-stage
 
-COPY  docker-entrypoint.sh /usr/src/app/docker-entrypoint.sh
+RUN npm ci
 
 COPY . /usr/src/app/
 
