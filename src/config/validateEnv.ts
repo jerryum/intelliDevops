@@ -15,6 +15,7 @@ function validateEnv() {
     NC_CRON_LOG_FORMAT: str(),
     NC_CRON_CORS_ORIGIN: str(),
     NC_CRON_CORS_CREDENTIALS: str(),
+    NC_CRON_SUDORY_X_AUTH_TOKEN: str(),
   });
 }
 

@@ -14,6 +14,7 @@ export type ScheduleCreationAttributes = Optional<
   | 'createdAt'
   | 'updatedAt'
   | 'cancelledAt'
+  | 'scheduleStatus'
 >;
 
 export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> implements ISchedule {
@@ -28,6 +29,7 @@ export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> 
     public scheduleApiBody: JSON;
     public scheduleFrom: Date;
     public scheduleTo: Date;
+    public scheduleStatus: string;
 }
 
 export default function (sequelize: Sequelize): typeof ScheduleModel {
@@ -81,6 +83,9 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
       
       scheduleTo: {
         type: DataTypes.DATE(),
+      },
+      scheduleStatus: {
+        type: DataTypes.STRING(2)
       },
     },
     {

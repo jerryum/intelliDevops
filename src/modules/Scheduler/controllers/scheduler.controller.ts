@@ -14,8 +14,10 @@ class SchedulerController {
        const cronTab = req.body.cronTab;
        const apiUrl = req.body.apiUrl;
        const apiBody = req.body.apiBody;
-
+      
+       
        const createCronRequest: CreateCronScheduleDto = {name,summary, cronTab, apiUrl, apiBody};
+      
 
        const responseCronCreate = await this.schedulerService.CreateCronSchedule (createCronRequest);
        res.status(200).json ({ data: responseCronCreate, message: 'Schedule request has been initiated'});

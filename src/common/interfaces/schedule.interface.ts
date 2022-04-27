@@ -14,4 +14,5 @@ export interface ISchedule {
     scheduleApiBody: Object;
     scheduleFrom: Date;
     scheduleTo: Date;
+    scheduleStatus: string;
 }
