@@ -1,4 +1,5 @@
 import { Paginate } from '@/common/interfaces/pagination.interface';
+
 export const getPagination = (req, res): Paginate => {
   const { size, page } = req.query;
   const limit = size ? +size : 3;
@@ -6,6 +7,7 @@ export const getPagination = (req, res): Paginate => {
 
   return { limit, offset };
 };
+
 /**
  * @param  {} data
  * @param  {} page
