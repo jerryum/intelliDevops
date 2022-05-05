@@ -136,6 +136,7 @@ class SchedulerService {
             ); 
         } // end of else  
         
+        console.log ("$$$$$$$$$$$$$$", responseData);
         const result: IScheduleResponse = {scheduleKey: apiKey, responseData: responseData};
         return result;
       
