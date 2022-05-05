@@ -18,18 +18,18 @@ export type ScheduleCreationAttributes = Optional<
 >;
 
 export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> implements ISchedule {
-    public scheduleKey: number;
-    public scheduleName: string;
-    public scheduleSummary: string;
-    public createdAt: Date;
-    public updatedAt: Date;
-    public cancelledAt: Date;
-    public scheduleApiUrl: string;
-    public scheduleCronTab: string;
-    public scheduleApiBody: JSON;
-    public scheduleFrom: Date;
-    public scheduleTo: Date;
-    public scheduleStatus: string;
+  public scheduleKey: number;
+  public scheduleName: string;
+  public scheduleSummary: string;
+  public createdAt: Date;
+  public updatedAt: Date;
+  public cancelledAt: Date;
+  public scheduleApiUrl: string;
+  public scheduleCronTab: string;
+  public scheduleApiBody: JSON;
+  public scheduleFrom: Date;
+  public scheduleTo: Date;
+  public scheduleStatus: string;
 }
 
 export default function (sequelize: Sequelize): typeof ScheduleModel {
@@ -44,12 +44,12 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
 
       scheduleName: {
         type: DataTypes.STRING(100),
-        allowNull: false
+        allowNull: false,
       },
 
       scheduleSummary: {
         type: DataTypes.STRING(500),
-        allowNull: true
+        allowNull: true,
       },
 
       createdAt: {
@@ -80,12 +80,12 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
       scheduleFrom: {
         type: DataTypes.DATE(),
       },
-      
+
       scheduleTo: {
         type: DataTypes.DATE(),
       },
       scheduleStatus: {
-        type: DataTypes.STRING(2)
+        type: DataTypes.STRING(2),
       },
     },
     {
@@ -93,7 +93,6 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
       modelName: 'Scheduler',
       sequelize,
     },
-
   );
   return ScheduleModel;
 }
