@@ -6,6 +6,7 @@ import { IScheduleResponse, ISchedule } from '@/common/interfaces/schedule.inter
 class SchedulerController {
   public schedulerService = new SchedulerService();
 
+
   public createCronSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, summary, cronTab, apiUrl, apiBody } = req.body;

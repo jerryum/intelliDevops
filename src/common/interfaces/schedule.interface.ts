@@ -1,5 +1,6 @@
 export interface IScheduleResponse {
-  scheduleKey: number;
+    scheduleKey: number;
+    responseData: object;
 }
 
 export interface ISchedule {

@@ -15,41 +15,19 @@ import { IDataStoredInToken, IRequestWithUser } from '@/common/interfaces/party.
  */
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    if (req.isAuthenticated()) {
-      return next();
+
+    const token = req.header('X_AUTH_TOKEN');
+    //console.log(token); // Get the token from 'x-auth-token' header
+    if (!token) {
+        return res.status(400).json({ msg: 'Authorization denied. ' });
     }
 
-//    const Authorization =
-//      req.cookies['X-AUTHORIZATION'] || (req.header('x-authorization') && req.header('x-authorization').split('Bearer ')[1]) || null;
-//    if (Authorization) {
-//      const secretKey: string = config.auth.jwtSecretKey;
-//      const verificationResponse = jwt.verify(Authorization, secretKey) as IDataStoredInToken;
-//      const partyUserKey = verificationResponse.userKey;
-//      const findPartyUser = await DB.PartyUser.findByPk(partyUserKey);
-
-//      const findPartyIncludePartyUser = await DB.Party.findOne({
-//        where: { partyId: findPartyUser.partyUserId },
-//        include: [
-//          {
-//            model: PartyUserModel,
-//            attributes: { exclude: ['password'] },
-//          },
-//        ],
-//        raw: true,
-//      });
-/*
-      if (findPartyIncludePartyUser) {
-        req.user = findPartyIncludePartyUser;
-        req.customerAccountKey = (req.headers.customerAccountKey as string) || findPartyIncludePartyUser.customerAccountKey;
-
-        next();
-      } else {
-        next(new HttpException(401, 'Wrong authentication token'));
-      }
-    } else {
-      next(new HttpException(401, 'Authentication token missing'));
+    if (token!=config.auth.x_auth_token) {
+        return res.status(401).json({ msg: 'Invalid token. '})
     }
-*/    
+
+    next();
+   
   } catch (error) {
     console.log(error);
     next(new HttpException(401, 'Wrong authentication token'));
