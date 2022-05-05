@@ -8,11 +8,9 @@ import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import session from 'express-session';
-import DB from '@/database';
 import { Routes } from '@/common/interfaces/routes.interface';
 import errorMiddleware from '@/common/middlewares/error.middleware';
 import { logger, stream } from '@/common/utils/logger';
-// import Passport from './modules/UserTenancy/provider/passport';
 import { Request, Response, NextFunction } from 'express';
 import config from 'config';
 
@@ -26,7 +24,6 @@ class App {
     this.port = Number(config.appPort);
     this.env = config.nodeEnv;
 
-    //this.connectToDatabase();
     this.initializeMiddlewares();
     this.initializeRoutes(routes);
     this.initializeSwagger();
@@ -49,19 +46,6 @@ class App {
     return this.app;
   }
 
-  private connectToDatabase() {
-    
-    DB.sequelize
-      .sync({ force: false })
-      .then(() => {
-        console.log('Database connected successfully');
-      })
-      .catch(err => {
-        console.log(err);
-      });
-    
-  }
-
   private initializeMiddlewares() {
     this.app.use(morgan(config.logFormat, { stream }));
     this.app.use(cors({ origin: config.cors.allowAnyOrigin, credentials: config.cors.credentials }));
@@ -74,7 +58,7 @@ class App {
     this.app.use(cookieParser());
     this.app.use(
       session({
-        secret: 'secrettexthere',
+        secret: config.auth.jwtSecretKey,
         saveUninitialized: false,
         resave: false,
       }),

@@ -1,5 +1,4 @@
 import Sequelize from 'sequelize';
-//import { writeFileSync } from 'fs';
 import { logger } from '@/common/utils/logger';
 import schedulerModel, { ScheduleModel } from '@/modules/Scheduler/models/scheduler.model';
 import config from 'config';

@@ -14,7 +14,7 @@ import validateEnv from './validateEnv';
 validateEnv();
 
 export default {
-  appPort: process.env.NC_CRON_PORT || 5000,
+  appPort: process.env.NC_CRON_PORT || 5010,
   nodeEnv: process.env.NC_CRON_ENV || 'development',
   logFormat: process.env.NC_CRON_LOG_FORMAT,
   cors: {
