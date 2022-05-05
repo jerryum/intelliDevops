@@ -34,6 +34,7 @@ export default {
   },
   auth: {
     jwtSecretKey: process.env.NC_CRON_JWT_SECRET_KEY,
-    sudory_x_auth_token: process.env.NC_CRON_SUDORY_X_AUTH_TOKEN || 'SUDORY'
+    sudory_x_auth_token: process.env.NC_CRON_SUDORY_X_AUTH_TOKEN || 'SUDORY',
+    x_auth_token: process.env.NC_CRON_X_AUTH_TOKEN || 'CRON',
   },
 };

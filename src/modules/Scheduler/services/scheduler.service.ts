@@ -14,11 +14,11 @@ class SchedulerService {
   public async getScheduledCronTaskbyApiKey(apiKey: number): Promise<ISchedule> {
 
     if (isEmpty(apiKey)) throw new HttpException(400, 'Missing apiKey');
-
+    
     const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleKey: apiKey } });
-    if (!getScheduledCronTask) throw new HttpException(409, "can't find the apiKey information in the database");
+    if (!getScheduledCronTask) throw new HttpException(404, "can't find the apiKey information in the database");
 
-    //console.log(getScheduledCronTask);
+    console.log(getScheduledCronTask);
 
     const target_job= scheduler.scheduledJobs[apiKey];
     if (!target_job) throw new HttpException(409, "the job is not in crontab");
@@ -42,13 +42,13 @@ class SchedulerService {
     .then (
         (result: any) => {console.log("cancelled job - db updated", result); },
         (error: any)  => {console.log("cancelled job - db update failed", error);
-                          throw new HttpException(409, "can't update status of scheduler db");} 
+                          throw new HttpException(410, "can't update status of scheduler db");} 
     );
 
   }
 
   public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<IScheduleResponse> {
-    if (isEmpty(CronRequestData)) throw new HttpException(400, 'Scheduling request data cannot be blank');
+    if (isEmpty(CronRequestData)) throw new HttpException(401, 'Scheduling request data cannot be blank');
 
     try {
         const x_auth_token = config.auth.sudory_x_auth_token; 
@@ -85,7 +85,6 @@ class SchedulerService {
         const apiHeader = {headers: {'x_auth_token': x_auth_token}};
         const task = scheduler.scheduleJob(apiKeyString, cronTab, function(){                  
             console.log(`Job ${apiKey} is inititaed`); 
-            
              axios.post(apiUrl,apiMessage,apiHeader)
             //axios.post(apiUrl,apiMessage)
               .then
@@ -96,8 +95,8 @@ class SchedulerService {
                 },
                 (error) => {
                     task.cancel();
-                    cancelFlag = 1;     
-                    console.log(`#######################Job ${apiKey} cancelled due to unexpoected error: `, error);
+                    cancelFlag = 1;
+                    console.log(`Job ${apiKey} cancelled due to unexpoected error: `, error);
                 }
               ) // close of .then 
             }
@@ -109,8 +108,15 @@ class SchedulerService {
                 {where: {scheduleKey: apiKey}},
             )
             .then (
-                (result: any) => {console.log("#########################db updated - cancelled job", result); },
-                (error: any)  => {console.log("db update failed - cancelled job", error);} 
+                (result: any) => {
+                  console.log("db updated - cancelled job", result); 
+                  throw new HttpException(412, 'Scheduling request cannot be processed due to unexpoected error');
+
+                },
+                (error: any)  => {
+                  console.log("db update failed - cancelled job", error);
+                  throw new HttpException(413, 'Scheduling request cannot be processed due to unexpoected error, DB status update is also failed');
+                } 
             );
         } else {
             await this.scheduler.update(
@@ -118,10 +124,12 @@ class SchedulerService {
             {where: {scheduleKey: apiKey}}
             ) 
             .then (
-                (result: any) => {console.log("#########################db updated", result); },
+                (result: any) => {console.log("db updated", result); },
                 (error: any)  => {
                                     console.log("job is cancelled duto database issue", error);
-                                    task.cancel();} 
+                                    task.cancel();
+                                    throw new HttpException(414, 'Scheduling request cannot be processed due to database error');
+                                  } 
             ); 
         } // end of else          
         const result: IScheduleResponse = {scheduleKey: apiKey};
