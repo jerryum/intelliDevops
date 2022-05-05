@@ -2,10 +2,11 @@ import { HttpException } from '@/common/exceptions/HttpException';
 import { CreateCronScheduleDto, ICancelScheduledCronTaskDto } from '../dtos/scheduler.dto';
 import { isEmpty } from '@/common/utils/util';
 import axios from 'axios'; 
-import scheduler from 'node-schedule';
+import MyScheduler from 'node-schedule';
 import { IScheduleResponse,ISchedule } from '@/common/interfaces/schedule.interface';
 import DB from '@/database';
 import config from '@/config';
+import { response } from 'express';
 //import { schedule } from 'node-cron';
 
 class SchedulerService {
@@ -20,7 +21,7 @@ class SchedulerService {
 
     console.log(getScheduledCronTask);
 
-    const target_job= scheduler.scheduledJobs[apiKey];
+    const target_job= MyScheduler.scheduledJobs[apiKey];
     if (!target_job) throw new HttpException(409, "the job is not in crontab");
     
     return getScheduledCronTask;
@@ -31,7 +32,7 @@ class SchedulerService {
     if (isEmpty(apiKey)) throw new HttpException(400, 'Missing apiKey');
  
     try {
-         const target_job = scheduler.scheduledJobs[apiKey]; 
+         const target_job = MyScheduler.scheduledJobs[apiKey]; 
          target_job.cancel();
          console.log("job cancelled");
     } catch(error)
@@ -48,6 +49,7 @@ class SchedulerService {
   }
 
   public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<IScheduleResponse> {
+    
     if (isEmpty(CronRequestData)) throw new HttpException(401, 'Scheduling request data cannot be blank');
 
     try {
@@ -59,6 +61,7 @@ class SchedulerService {
         var apiKeyString = "";
         var cancelFlag = 0;
         var apiMessage = {};
+        var responseData;
 
         await this.scheduler.create(
               {
@@ -83,14 +86,14 @@ class SchedulerService {
         
         apiMessage = { name, summary,  ...apiBody};
         const apiHeader = {headers: {'x_auth_token': x_auth_token}};
-        const task = scheduler.scheduleJob(apiKeyString, cronTab, function(){                  
+        const task = MyScheduler.scheduleJob(apiKeyString, cronTab, function(){                  
             console.log(`Job ${apiKey} is inititaed`); 
              axios.post(apiUrl,apiMessage,apiHeader)
-            //axios.post(apiUrl,apiMessage)
               .then
               (
                 (response) => {
                   const status = response.data.status;
+                  responseData=response.data;
                   console.log(`Job ${apiKey} is processed`, status);
                 },
                 (error) => {
@@ -131,13 +134,21 @@ class SchedulerService {
                                     throw new HttpException(414, 'Scheduling request cannot be processed due to database error');
                                   } 
             ); 
-        } // end of else          
-        const result: IScheduleResponse = {scheduleKey: apiKey};
+        } // end of else  
+        
+        const result: IScheduleResponse = {scheduleKey: apiKey, responseData: responseData};
         return result;
       
     } catch (error) // eond of try   
     {throw new HttpException(400, 'Fail to create the requested schedule '); }; 
   } // end of CreateCronSchedule
+ 
+  public sleep (ms) {
+    return new Promise((resolve)=> {
+        setTimeout (resolve, ms); 
+    }); 
+  }
+
 }  
 
 export default SchedulerService;
