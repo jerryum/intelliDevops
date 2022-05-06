@@ -9,6 +9,7 @@ import { IScheduleResponse,ISchedule } from '@/common/interfaces/schedule.interf
 import DB from '@/database';
 import config from '@/config';
 import { response } from 'express';
+import { schedule } from 'node-cron';
 //import { schedule } from 'node-cron';
 
 class SchedulerService {
@@ -87,19 +88,19 @@ class SchedulerService {
         apiMessage = { name, summary,  ...apiBody};
         const apiHeader = {headers: {'x_auth_token': x_auth_token}};
         const task = MyScheduler.scheduleJob(apiKeyString, cronTab, function(){                  
-            console.log(`Job ${apiKey} is inititaed`); 
+            console.log(`Job ${apiKey} is inititaed, name: ${name}, crontab: ${cronTab} `); 
              axios.post(apiUrl,apiMessage,apiHeader)
               .then
               (
                 (response) => {
                   const status = response.data.status;
                   responseData=response.data;
-                  console.log(`Job ${apiKey} is processed`, status);
+                  console.log(`Job ${apiKey} is processed, name: ${name}, crontab: ${cronTab}`, status);
                 },
                 (error) => {
                     task.cancel();
                     cancelFlag = 1;
-                    console.log(`Job ${apiKey} cancelled due to unexpoected error: `, error);
+                    console.log(`Job ${apiKey} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);
                 }
               ) // close of .then 
             }
