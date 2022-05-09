@@ -8,8 +8,6 @@ import { IScheduleResponse,ISchedule } from '@/common/interfaces/schedule.interf
 
 import DB from '@/database';
 import config from '@/config';
-import { response } from 'express';
-import { schedule } from 'node-cron';
 //import { schedule } from 'node-cron';
 
 class SchedulerService {
@@ -60,7 +58,6 @@ class SchedulerService {
       const { name, summary, apiBody, apiUrl, cronTab } = CronRequestData;
       var apiKey = 0;
       var apiKeyString = '';
-      var cancelFlag = 0;
       var apiMessage = {};
       var responseData;
 
@@ -95,53 +92,27 @@ class SchedulerService {
                 (response) => {
                   const status = response.data.status;
                   responseData=response.data;
-                  console.log(`Job ${apiKey} is processed, name: ${name}, crontab: ${cronTab}`, status);
+                  this.scheduler.update(
+                    {updatedAt: new Date(), scheduleStatus: "AC", },
+                    {where: {scheduleKey: apiKey}}
+                    );
+                  console.log(`Job ${apiKey} is processed, name: ${name}, crontab: ${cronTab}`, status);   
                 },
                 (error) => {
                     task.cancel();
-                    cancelFlag = 1;
-                    console.log(`Job ${apiKey} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);
-                }
+                    this.scheduler.update(
+                      {updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: "CA" },
+                      {where: {scheduleKey: apiKey}},);
+                    console.log(`Job ${apiKey} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);  
+                } // error
               ) // close of .then 
-            }
+            } // close of schedulejob function
         );  //close of scheduleJob
-
-        if (cancelFlag === 1) {
-            await this.scheduler.update(
-                {updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: "CA" },
-                {where: {scheduleKey: apiKey}},
-            )
-            .then (
-                (result: any) => {
-                  console.log("db updated - cancelled job", result); 
-                  throw new HttpException(412, 'Scheduling request cannot be processed due to unexpoected error');
-
-                },
-                (error: any)  => {
-                  console.log("db update failed - cancelled job", error);
-                  throw new HttpException(413, 'Scheduling request cannot be processed due to unexpoected error, DB status update is also failed');
-                } 
-            );
-        } else {
-            await this.scheduler.update(
-            {updatedAt: new Date(), scheduleStatus: "AC", },
-            {where: {scheduleKey: apiKey}}
-            ) 
-            .then (
-                (result: any) => {console.log("db updated", result); },
-                (error: any)  => {
-                                    console.log("job is cancelled duto database issue", error);
-                                    task.cancel();
-                                    throw new HttpException(414, 'Scheduling request cannot be processed due to database error');
-                                  } 
-            ); 
-        } // end of else  
         
         const result: IScheduleResponse = {scheduleKey: apiKey, responseData: responseData};
         return result;
-      
     } catch (error) // eond of try   
-    {throw new HttpException(400, 'Fail to create the requested schedule '); }; 
+    {throw new HttpException(500, 'Fail to create the requested schedule '); }; 
   } // end of CreateCronSchedule
  
   public sleep (ms) {
@@ -149,7 +120,6 @@ class SchedulerService {
         setTimeout (resolve, ms); 
     }); 
   }
-
 } 
 
 export default SchedulerService;
