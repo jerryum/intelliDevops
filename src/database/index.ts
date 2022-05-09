@@ -2,7 +2,7 @@ import Sequelize from 'sequelize';
 import { logger } from '@/common/utils/logger';
 import schedulerModel, { ScheduleModel } from '@/modules/Scheduler/models/scheduler.model';
 import config from 'config';
-//import InitialRecordService from './initialRecord';
+import InitialRecordService from './initialRecord';
 
 const host = config.db.mariadb.host;
 const port = config.db.mariadb.port || 3306;
@@ -44,12 +44,15 @@ const DB = {
 };
 
 DB.sequelize
-.sync({ force: false })
-.then(() => {
-  console.log('Database connected successfully');
-})
-.catch(err => {
-  console.log(err);
-});
+  .sync({ force: false })
+  .then(async () => {
+    const initialRecordService = new InitialRecordService();
+
+    initialRecordService.updateScheduler().then(() => {
+      console.log('Database connected successfully');
+    });
+  })
+  .catch(console.log);
+
 
 export default DB;
