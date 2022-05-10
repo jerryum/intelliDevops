@@ -19,5 +19,5 @@ export class CreateCronScheduleDto {
 }
 
 export interface ICancelScheduledCronTaskDto {
-  apiKey: number;
+  apiId: number;
 }

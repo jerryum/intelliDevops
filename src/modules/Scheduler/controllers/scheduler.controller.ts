@@ -19,32 +19,32 @@ class SchedulerController {
     }
   };
 
-  public cancelCronScheduleByApiKey = async (req: Request, res: Response, next: NextFunction) => {
+  public cancelCronScheduleByapiId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const apiKey = req.body.apiKey;
-      const scheduledTask = await this.schedulerService.getScheduledCronTaskbyApiKey(apiKey);
+      const apiId = req.body.apiId;
+      const scheduledTask = await this.schedulerService.getScheduledCronTaskbyapiId(apiId);
 
       if (!scheduledTask) {
         return res.sendStatus(404);
       }
 
-      await this.schedulerService.cancelScheduledCronTask(apiKey);
-      res.status(200).json({ message: `Scheduled cron task ${apiKey} request has been cancelled` });
+      await this.schedulerService.cancelScheduledCronTask(apiId);
+      res.status(200).json({ message: `Scheduled cron task ${apiId} request has been cancelled` });
     } catch (error) {
       next(error);
     }
   };
 
-  public getScheduledCronByApiKey = async (req: Request, res: Response, next: NextFunction) => {
+  public getScheduledCronByapiId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const apiKey = Number(req.params.apiKey);
-      const scheduledCronTask: ISchedule = await this.schedulerService.getScheduledCronTaskbyApiKey(apiKey);
+      const apiId = Number(req.params.apiId);
+      const scheduledCronTask: ISchedule = await this.schedulerService.getScheduledCronTaskbyapiId(apiId);
 
       if (scheduledCronTask) {
         res.status(200).json({ data: scheduledCronTask, message: 'success' });
         return;
       } else {
-        res.status(404).json({ message: `Scheduled cron task id(${apiKey}) not found` });
+        res.status(404).json({ message: `Scheduled cron task id(${apiId}) not found` });
         return;
       }
     } catch (error) {

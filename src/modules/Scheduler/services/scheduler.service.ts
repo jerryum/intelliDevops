@@ -8,36 +8,38 @@ import { IScheduleResponse,ISchedule } from '@/common/interfaces/schedule.interf
 
 import DB from '@/database';
 import config from '@/config';
+
+
 //import { schedule } from 'node-cron';
 
 class SchedulerService {
   public scheduler = DB.Scheduler;
 
-  public async getScheduledCronTaskbyApiKey(apiKey: number): Promise<ISchedule> {
-    if (isEmpty(apiKey)) throw new HttpException(400, 'Missing apiKey');
+  public async getScheduledCronTaskbyapiId(apiId: number): Promise<ISchedule> {
+    if (isEmpty(apiId)) throw new HttpException(400, 'Missing apiId');
     
-    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleKey: apiKey } });
-    if (!getScheduledCronTask) throw new HttpException(404, "can't find the apiKey information in the database");
+    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleKey: apiId } });
+    if (!getScheduledCronTask) throw new HttpException(404, "can't find the apiId information in the database");
 
     console.log(getScheduledCronTask);
 
-    const target_job= MyScheduler.scheduledJobs[apiKey];
+    const target_job= MyScheduler.scheduledJobs[apiId];
     if (!target_job) throw new HttpException(409, "the job is not in crontab");
     return getScheduledCronTask;
   }
 
-  public async cancelScheduledCronTask(apiKey: number) {
-    if (isEmpty(apiKey)) throw new HttpException(400, 'Missing apiKey');
+  public async cancelScheduledCronTask(apiId: number) {
+    if (isEmpty(apiId)) throw new HttpException(400, 'Missing apiId');
 
     try {
-      const target_job = MyScheduler.scheduledJobs[apiKey]; 
+      const target_job = MyScheduler.scheduledJobs[apiId]; 
       target_job.cancel();
       console.log("job cancelled");
     } catch(error)
       {throw new HttpException(400, 'Fail to cancel the requested schedule ');}; 
 
     const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
-    await this.scheduler.update({ ...updateDataSet }, { where: { scheduleKey: apiKey } }).then(
+    await this.scheduler.update({ ...updateDataSet }, { where: { scheduleKey: apiId } }).then(
       (result: any) => {
         console.log('cancelled job - db updated', result);
       },
@@ -49,67 +51,62 @@ class SchedulerService {
   }
 
   public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<IScheduleResponse> {
-    
     if (isEmpty(CronRequestData)) throw new HttpException(401, 'Scheduling request data cannot be blank');
 
     try {
-
       const x_auth_token = config.auth.sudory_x_auth_token;
       const { name, summary, apiBody, apiUrl, cronTab } = CronRequestData;
-      var apiKey = 0;
-      var apiKeyString = '';
+      
       var apiMessage = {};
       var responseData;
 
-        await this.scheduler.create(
-              {
-                scheduleName: name,
-                scheduleSummary: summary,
-                scheduleCronTab: cronTab,
-                scheduleApiUrl: apiUrl,
-                scheduleApiBody: apiBody,
-                createdAt: new Date(),
-                scheduleStatus: "DR"
-              }) 
-            .then (
-              (result) => {
-                  apiKey = result.scheduleKey;
-                  apiKeyString = apiKey.toString(); 
-                  console.log("Job request saved in database as DRAFT status, apiKey: ", apiKey);
+      const uuid = require('uuid'); 
+      const apiId = uuid.v1();
+
+      apiMessage = { name, summary,  ...apiBody};
+      const apiHeader = {headers: {'x_auth_token': x_auth_token}};
+      console.log(apiMessage);
+      console.log(apiId);  
+      const task = MyScheduler.scheduleJob(apiId, cronTab, function(){                  
+          console.log(`Job ${apiId} is inititaed, name: ${name}, crontab: ${cronTab} `); 
+          axios.post(apiUrl,apiMessage,apiHeader)
+          .then
+            (
+              (response) => {
+                const status = response.data.status;
+                responseData=response.data;
+                console.log(`Job ${apiId} is processed, name: ${name}, crontab: ${cronTab}`, status);   
               },
               (error) => {
-                console.log("Job request can't be saved due to database related error: ", error);
-                throw new HttpException(407, 'Scheduling request cannot be saved due to unexpoected error');
-              });
-        
-        apiMessage = { name, summary,  ...apiBody};
-        const apiHeader = {headers: {'x_auth_token': x_auth_token}};
-        const task = MyScheduler.scheduleJob(apiKeyString, cronTab, function(){                  
-            console.log(`Job ${apiKey} is inititaed, name: ${name}, crontab: ${cronTab} `); 
-             axios.post(apiUrl,apiMessage,apiHeader)
-              .then
-              (
-                (response) => {
-                  const status = response.data.status;
-                  responseData=response.data;
-                  this.scheduler.update(
-                    {updatedAt: new Date(), scheduleStatus: "AC", },
-                    {where: {scheduleKey: apiKey}}
-                    );
-                  console.log(`Job ${apiKey} is processed, name: ${name}, crontab: ${cronTab}`, status);   
-                },
-                (error) => {
-                    task.cancel();
-                    this.scheduler.update(
-                      {updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: "CA" },
-                      {where: {scheduleKey: apiKey}},);
-                    console.log(`Job ${apiKey} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);  
-                } // error
-              ) // close of .then 
-            } // close of schedulejob function
-        );  //close of scheduleJob
-        
-        const result: IScheduleResponse = {scheduleKey: apiKey, responseData: responseData};
+                  task.cancel();
+                  console.log(`Job ${apiId} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);  
+                  throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+              } // error
+            ) // close of .then 
+          } // close of schedulejob function
+      );  //close of scheduleJob
+
+      await this.scheduler.create(
+        {
+          scheduleId: apiId,
+          scheduleName: name,
+          scheduleSummary: summary,
+          scheduleCronTab: cronTab,
+          scheduleApiUrl: apiUrl,
+          scheduleApiBody: apiBody,
+          createdAt: new Date(),
+          scheduleStatus: "AC"
+        }) 
+      .then (
+        (result) => {
+            console.log("Job saved in database ", apiId);
+        },
+        (error) => {
+          console.log("Job request can't be saved due to database related error: ", error);
+          throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+        });
+
+        const result: IScheduleResponse = {scheduleKey: apiId, responseData: responseData};
         return result;
     } catch (error) // eond of try   
     {throw new HttpException(500, 'Fail to create the requested schedule '); }; 

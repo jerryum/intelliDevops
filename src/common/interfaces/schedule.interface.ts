@@ -5,6 +5,7 @@ export interface IScheduleResponse {
 
 export interface ISchedule {
   scheduleKey: number;
+  scheduleId: string;
   scheduleName: string;
   scheduleSummary: string;
   createdAt: Date;

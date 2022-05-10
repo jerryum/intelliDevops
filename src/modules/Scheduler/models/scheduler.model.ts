@@ -1,9 +1,12 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { ISchedule } from '@/common/interfaces/schedule.interface';
+import { UUID } from 'sequelize';
+import { UUIDVersion } from 'class-validator';
 
 export type ScheduleCreationAttributes = Optional<
   ISchedule,
   | 'scheduleKey'
+  | 'scheduleId'
   | 'scheduleName'
   | 'scheduleSummary'
   | 'scheduleApiUrl'
@@ -19,6 +22,7 @@ export type ScheduleCreationAttributes = Optional<
 
 export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> implements ISchedule {
   public scheduleKey: number;
+  public scheduleId: string;
   public scheduleName: string;
   public scheduleSummary: string;
   public createdAt: Date;
@@ -40,6 +44,11 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,
+      },
+
+      scheduleId: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
       },
 
       scheduleName: {

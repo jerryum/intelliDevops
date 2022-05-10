@@ -5,7 +5,7 @@ import DB from '@/database';
 class InitialRecordService {
     public scheduler = DB.Scheduler;
     public async updateScheduler(): Promise<void> {
-        const updateresults = await this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: "AC"}}); 
+        const updateresults = await this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: ["AC", "DR"]}}); 
         console.log("Updated schedule jobs from AC status to CA status: ", updateresults);
     }
 }
