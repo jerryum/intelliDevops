@@ -18,7 +18,7 @@ class SchedulerService {
   public async getScheduledCronTaskbyapiId(apiId: number): Promise<ISchedule> {
     if (isEmpty(apiId)) throw new HttpException(400, 'Missing apiId');
     
-    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleKey: apiId } });
+    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: apiId } });
     if (!getScheduledCronTask) throw new HttpException(404, "can't find the apiId information in the database");
 
     console.log(getScheduledCronTask);
@@ -39,7 +39,7 @@ class SchedulerService {
       {throw new HttpException(400, 'Fail to cancel the requested schedule ');}; 
 
     const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
-    await this.scheduler.update({ ...updateDataSet }, { where: { scheduleKey: apiId } }).then(
+    await this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: apiId } }).then(
       (result: any) => {
         console.log('cancelled job - db updated', result);
       },
