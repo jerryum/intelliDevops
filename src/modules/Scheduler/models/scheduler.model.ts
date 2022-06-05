@@ -18,22 +18,23 @@ export type ScheduleCreationAttributes = Optional<
   | 'updatedAt'
   | 'cancelledAt'
   | 'scheduleStatus'
+  | 'reRunRequire'
 >;
 
 export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> implements ISchedule {
-  public scheduleKey: number;
-  public scheduleId: string;
-  public scheduleName: string;
-  public scheduleSummary: string;
-  public createdAt: Date;
-  public updatedAt: Date;
-  public cancelledAt: Date;
-  public scheduleApiUrl: string;
-  public scheduleCronTab: string;
-  public scheduleApiBody: JSON;
-  public scheduleFrom: Date;
-  public scheduleTo: Date;
-  public scheduleStatus: string;
+    public scheduleKey: number;
+    public scheduleName: string;
+    public scheduleSummary: string;
+    public createdAt: Date;
+    public updatedAt: Date;
+    public cancelledAt: Date;
+    public scheduleApiUrl: string;
+    public scheduleCronTab: string;
+    public scheduleApiBody: JSON;
+    public scheduleFrom: Date;
+    public scheduleTo: Date;
+    public scheduleStatus: string;
+    public reRunRequire: boolean
 }
 
 export default function (sequelize: Sequelize): typeof ScheduleModel {
@@ -94,7 +95,10 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
         type: DataTypes.DATE(),
       },
       scheduleStatus: {
-        type: DataTypes.STRING(2),
+        type: DataTypes.STRING(2)
+      },
+      reRunRequire: {
+        type: DataTypes.BOOLEAN()
       },
     },
     {
