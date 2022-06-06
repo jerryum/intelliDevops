@@ -5,7 +5,7 @@ export interface IScheduleResponse {
 
 export interface ISchedule {
     scheduleKey: number;
-  scheduleId: string;
+    scheduleId: string;
     scheduleName: string;
     scheduleSummary: string;
     createdAt: Date;
@@ -17,5 +17,6 @@ export interface ISchedule {
     scheduleFrom: Date;
     scheduleTo: Date;
     scheduleStatus: string;
-    reRunRequire: boolean
+    reRunRequire: boolean;
+    timezone: string;
 }

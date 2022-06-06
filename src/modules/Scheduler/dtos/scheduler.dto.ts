@@ -11,20 +11,22 @@ export class CreateCronScheduleDto{
     @IsNotEmpty()
     public name: string;
 
+    @IsNotEmpty()
     public summary: string;
 
+    @IsNotEmpty()
     public apiBody: object;
 
     public scheduleFrom: Date;
 
     public scheduleTo: Date;
 
-    public reRunRequire: boolean
+    @IsNotEmpty()
+    public reRunRequire: boolean;
 
-
-    //public scheduleKey: number;
+    public timezone: string;
 }
 
 export interface ICancelScheduledCronTaskDto {
-  apiId: number;
+  apiId: string;
 }

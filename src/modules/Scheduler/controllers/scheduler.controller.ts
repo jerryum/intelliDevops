@@ -9,8 +9,8 @@ class SchedulerController {
 
   public createCronSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, summary, cronTab, apiUrl, apiBody } = req.body;
-      const createCronRequest: CreateCronScheduleDto = { name, summary, cronTab, apiUrl, apiBody };
+      const { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone} = req.body;
+      const createCronRequest: CreateCronScheduleDto = { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone };
       const responseCronCreate = await this.schedulerService.CreateCronSchedule(createCronRequest);
       res.status(200).json({ data: responseCronCreate, message: 'Schedule request has been initiated' });
     } catch (error) {
@@ -19,32 +19,33 @@ class SchedulerController {
     }
   };
 
-  public cancelCronScheduleByapiId = async (req: Request, res: Response, next: NextFunction) => {
+  public cancelCronScheduleBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const apiId = req.body.apiId;
-      const scheduledTask = await this.schedulerService.getScheduledCronTaskbyapiId(apiId);
+      const schedulerId = req.body.schedulerId;
+      const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
 
       if (!scheduledTask) {
         return res.sendStatus(404);
       }
 
-      await this.schedulerService.cancelScheduledCronTask(apiId);
-      res.status(200).json({ message: `Scheduled cron task ${apiId} request has been cancelled` });
+      await this.schedulerService.cancelScheduledCronTask(schedulerId);
+      res.status(200).json({ message: `Scheduled cron task ${schedulerId} request has been cancelled` });
     } catch (error) {
       next(error);
     }
   };
 
-  public getScheduledCronByapiId = async (req: Request, res: Response, next: NextFunction) => {
+  public getScheduledCronBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const apiId = Number(req.params.apiId);
-      const scheduledCronTask: ISchedule = await this.schedulerService.getScheduledCronTaskbyapiId(apiId);
+      const schedulerId = req.params.schedulerId;
+      console.log (req.params.schedulerId);
+      const scheduledCronTask: ISchedule = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
 
       if (scheduledCronTask) {
         res.status(200).json({ data: scheduledCronTask, message: 'success' });
         return;
       } else {
-        res.status(404).json({ message: `Scheduled cron task id(${apiId}) not found` });
+        res.status(404).json({ message: `Scheduled cron task id(${schedulerId}) not found` });
         return;
       }
     } catch (error) {

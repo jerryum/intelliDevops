@@ -19,10 +19,12 @@ export type ScheduleCreationAttributes = Optional<
   | 'cancelledAt'
   | 'scheduleStatus'
   | 'reRunRequire'
+  | 'timezone'
 >;
 
 export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> implements ISchedule {
     public scheduleKey: number;
+    public scheduleId: string;
     public scheduleName: string;
     public scheduleSummary: string;
     public createdAt: Date;
@@ -34,7 +36,8 @@ export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> 
     public scheduleFrom: Date;
     public scheduleTo: Date;
     public scheduleStatus: string;
-    public reRunRequire: boolean
+    public reRunRequire: boolean;
+    public timezone: string;
 }
 
 export default function (sequelize: Sequelize): typeof ScheduleModel {
@@ -95,10 +98,13 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
         type: DataTypes.DATE(),
       },
       scheduleStatus: {
-        type: DataTypes.STRING(2)
+        type: DataTypes.STRING(2),
       },
       reRunRequire: {
-        type: DataTypes.BOOLEAN()
+        type: DataTypes.BOOLEAN(),
+      },
+      timezone: {
+        type: DataTypes.STRING(100),
       },
     },
     {
