@@ -79,8 +79,10 @@ class SchedulerService {
               },
               (error) => {
                   task.cancel();
+                  console.log("api message:", apiMessage);
+                  console.log("api error:", error);
                   console.log(`Job ${apiId} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);  
-                  throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+                  //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
               } // error
             ) // close of .then 
           } // close of schedulejob function
