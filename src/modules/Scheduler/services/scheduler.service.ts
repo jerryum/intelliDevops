@@ -15,7 +15,7 @@ import config from '@/config';
 class SchedulerService {
   public scheduler = DB.Scheduler;
 
-  public async getScheduledCronTaskbyapiId(apiId: number): Promise<ISchedule> {
+  public async getScheduledCronTaskbyapiId(apiId: string): Promise<ISchedule> {
     if (isEmpty(apiId)) throw new HttpException(400, 'Missing apiId');
     
     const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: apiId } });
@@ -28,7 +28,7 @@ class SchedulerService {
     return getScheduledCronTask;
   }
 
-  public async cancelScheduledCronTask(apiId: number) {
+  public async cancelScheduledCronTask(apiId: string) {
     if (isEmpty(apiId)) throw new HttpException(400, 'Missing apiId');
 
     try {

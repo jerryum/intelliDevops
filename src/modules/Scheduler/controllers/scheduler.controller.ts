@@ -37,7 +37,7 @@ class SchedulerController {
 
   public getScheduledCronByapiId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const apiId = Number(req.params.apiId);
+      const apiId = req.params.apiId;
       const scheduledCronTask: ISchedule = await this.schedulerService.getScheduledCronTaskbyapiId(apiId);
 
       if (scheduledCronTask) {
