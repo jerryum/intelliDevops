@@ -9,8 +9,8 @@ class SchedulerController {
 
   public createCronSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone} = req.body;
-      const createCronRequest: CreateCronScheduleDto = { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone };
+      const { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId} = req.body;
+      const createCronRequest: CreateCronScheduleDto = { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId };
       const responseCronCreate = await this.schedulerService.CreateCronSchedule(createCronRequest);
       res.status(200).json({ data: responseCronCreate, message: 'Schedule request has been initiated' });
     } catch (error) {
@@ -72,7 +72,7 @@ class SchedulerController {
     try {
       const schedulerId = req.params.schedulerId;
       console.log (req.params.schedulerId);
-      const scheduledCronTask: ISchedule = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
+      const scheduledCronTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
 
       if (scheduledCronTask) {
         res.status(200).json({ data: scheduledCronTask, message: 'success' });

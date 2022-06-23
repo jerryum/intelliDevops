@@ -16,7 +16,7 @@ class SchedulerService {
   public scheduler = DB.Scheduler;
   
 
-  public async getScheduledCronTaskBySchedulerId(scheduleId: string): Promise<ISchedule> {
+  public async getScheduledCronTaskBySchedulerId(scheduleId: string): Promise<object> {
     if (isEmpty(scheduleId)) throw new HttpException(400, 'Missing schedulerId');
 
     const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: scheduleId } });
@@ -47,7 +47,7 @@ class SchedulerService {
   public async getScheduledCronTaskByAccountId(accountId: string): Promise<ISchedule[]> {
     if (isEmpty(accountId)) throw new HttpException(400, 'Missing accountId');
 
-    let filteredScheduledCronTasks;
+    let filteredScheduledCronTasks = [];
     let i = 0;
     const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId, scheduleStatus: 'AC' } });
     if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
@@ -78,7 +78,7 @@ class SchedulerService {
   public async getScheduledCronTaskByClusterId(clusterId: string): Promise<ISchedule[]> {
     if (isEmpty(clusterId)) throw new HttpException(400, 'Missing accountId');
 
-    let filteredScheduledCronTasks;
+    let filteredScheduledCronTasks=[];
     let i = 0;
     const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId, scheduleStatus: 'AC'  } });
     if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
@@ -196,15 +196,13 @@ class SchedulerService {
 
     try {
       const x_auth_token = config.auth.sudory_x_auth_token;
-      const { name, summary, apiBody, apiUrl, cronTab, scheduleFrom, scheduleTo, reRunRequire, timezone } = CronRequestData;
+      const { name, summary, apiBody, apiUrl, cronTab, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId } = CronRequestData;
       console.log (CronRequestData);
       var apiMessage = {};
       var responseData;
 
       //need to convert the input start and end time to UTC time (using timezone information)
-    
-      //
-    
+
       const uuid = require('uuid');
       const schedulerId = uuid.v1();
 
@@ -244,6 +242,8 @@ class SchedulerService {
             reRunRequire: reRunRequire,
             createdAt: new Date(),
             timezone: timezone,
+            accountId: accountId,
+            clusterId: clusterId,
             scheduleStatus: "AC"
           })
         .then (

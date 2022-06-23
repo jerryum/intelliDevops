@@ -25,6 +25,10 @@ export class CreateCronScheduleDto{
     public reRunRequire: boolean;
 
     public timezone: string;
+
+    public accountId: string;
+
+    public clusterId: string;
 }
 
 export interface ICancelScheduledCronTaskDto {
