@@ -57,6 +57,7 @@ class SchedulerService {
       let target_job= MyScheduler.scheduledJobs[scheduleId];
       if (target_job) {
         filteredScheduledCronTasks[i] = job;
+        i++;
       }
       else { 
         const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
@@ -70,7 +71,7 @@ class SchedulerService {
           },
         );
       }
-      i++;
+
     });
     return filteredScheduledCronTasks;
   }
@@ -88,6 +89,7 @@ class SchedulerService {
       let target_job= MyScheduler.scheduledJobs[scheduleId];
       if (target_job) {
         filteredScheduledCronTasks[i] = job;
+        i++;
       }
       else { 
         const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
@@ -101,7 +103,7 @@ class SchedulerService {
           },
         );
       }
-      i++;
+      
     });
     return filteredScheduledCronTasks;
   }
@@ -131,62 +133,65 @@ class SchedulerService {
     );
   }
 
-  public async cancelScheduledCronTaskUnderAccountId(accountId: string): Promise<ISchedule[]> {
+  public async cancelScheduledCronTaskUnderAccountId(accountId: string): Promise<object> {
     if (isEmpty(accountId)) throw new HttpException(400, 'Missing accountId');
 
-    let filteredScheduledCronTasks;
-    let i = 0;
-    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId } });
+    let filteredScheduledCronTasks=[];
+    let no = 0;
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId, scheduleStatus: 'AC'  } });
     if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
 
     allScheduledCronTasks.forEach((job) => {
       let scheduleId = job.scheduleId;
+      let scheduleName = job.scheduleName;
       let target_job= MyScheduler.scheduledJobs[scheduleId];
-      if (target_job) {
-        target_job.cancel();
+      if (target_job)  target_job.cancel();
 
-        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
-        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
-          (result: any) => {
-            console.log('cancelled job - db updated', result);
-          },
-          (error: any) => {
-            console.log('cancelled job - db update failed', error);
-            throw new HttpException(409, "can't update status of scheduler db");
-          },
-        );
-      }
-      i++;
+      const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+      this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+        (result: any) => {
+          console.log('cancelled job - db updated', result);
+          
+        },
+        (error: any) => {
+          console.log('cancelled job - db update failed', error);
+          throw new HttpException(409, "can't update status of scheduler db");
+        },
+      );
+      filteredScheduledCronTasks[no]={no, scheduleId, scheduleName};
+      no++;
     });
+
     return filteredScheduledCronTasks;
   }  
 
-  public async cancelScheduledCronTaskUnderClusterId(clusterId: string): Promise<ISchedule[]> {
+  public async cancelScheduledCronTaskUnderClusterId(clusterId: string): Promise<object> {
     if (isEmpty(clusterId)) throw new HttpException(400, 'Missing accountId');
 
-    let filteredScheduledCronTasks;
-    let i = 0;
-    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId } });
-    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
+    let filteredScheduledCronTasks=[];
+    let no = 0;
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId, scheduleStatus: 'AC'  } });
+    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the clusterId ${clusterId} information in the database`);
 
     allScheduledCronTasks.forEach((job) => {
       let scheduleId = job.scheduleId;
+      let scheduleName = job.scheduleName;
       let target_job= MyScheduler.scheduledJobs[scheduleId];
-      if (target_job) {
-        target_job.cancel();
+      if (target_job)  target_job.cancel();
 
-        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
-        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
-          (result: any) => {
-            console.log('cancelled job - db updated', result);
-          },
-          (error: any) => {
-            console.log('cancelled job - db update failed', error);
-            throw new HttpException(409, "can't update status of scheduler db");
-          },
-        );
-      }
-      i++;
+      const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+      this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+        (result: any) => {
+          console.log('cancelled job - db updated', result);
+          
+        },
+        (error: any) => {
+          console.log('cancelled job - db update failed', error);
+          throw new HttpException(409, "can't update status of scheduler db");
+        },
+      );
+      filteredScheduledCronTasks[no]={no, scheduleId, scheduleName};
+      no++;
     });
     return filteredScheduledCronTasks;
   }    
@@ -315,7 +320,9 @@ class SchedulerService {
                       reRunRequire: job.reRunRequire,
                       createdAt: new Date(),
                       timezone: job.timezone,
-                      scheduleStatus: "AC"
+                      scheduleStatus: "AC",
+                      clusterId: job.clusterId,
+                      accountId: job.accountId,
                     })
                   .then (
                      (result) => {

@@ -22,12 +22,7 @@ class SchedulerController {
   public cancelCronScheduleBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const schedulerId = req.params.schedulerId;
-      const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
-
-      if (!scheduledTask) {
-        return res.sendStatus(404);
-      }
-
+ 
       await this.schedulerService.cancelScheduledCronTask(schedulerId);
       res.status(200).json({ message: `Scheduled cron task ${schedulerId} request has been cancelled` });
     } catch (error) {
@@ -38,14 +33,14 @@ class SchedulerController {
   public cancelCronScheduleByAccountId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const accountId = req.params.accountId;
-      const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(accountId);
 
-      if (!scheduledTask) {
-        return res.sendStatus(404);
+      const cancelResult = await this.schedulerService.cancelScheduledCronTaskUnderAccountId(accountId);
+      if (Object.keys(cancelResult).length == 0) 
+      {
+        res.status(200).json({data: cancelResult, message: `No schedule to delete under accountId ${accountId}` });
+      } else { 
+      res.status(200).json({data: cancelResult, message: `Scheduled cron task(s) under accountId ${accountId} has(have) been cancelled` });
       }
-
-      await this.schedulerService.cancelScheduledCronTaskUnderAccountId(accountId);
-      res.status(200).json({ message: `Scheduled cron task under accountId ${accountId} request has been cancelled` });
     } catch (error) {
       next(error);
     }
@@ -54,14 +49,14 @@ class SchedulerController {
   public cancelCronScheduleByClusterId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const clusterId = req.params.clusterId;
-      const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(clusterId);
 
-      if (!scheduledTask) {
-        return res.sendStatus(404);
+      const cancelResult = await this.schedulerService.cancelScheduledCronTaskUnderClusterId(clusterId);
+      if (Object.keys(cancelResult).length == 0) 
+      {
+        res.status(200).json({data: cancelResult, message: `No schedule to delete under accountId ${clusterId}` });
+      } else {
+      res.status(200).json({ data: cancelResult, message: `Scheduled cron task(s) under accountId ${clusterId} has(have) been cancelled` });
       }
-
-      await this.schedulerService.cancelScheduledCronTaskUnderClusterId(clusterId);
-      res.status(200).json({ message: `Scheduled cron task under accountId ${clusterId} request has been cancelled` });
     } catch (error) {
       next(error);
     }
