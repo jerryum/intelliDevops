@@ -11,11 +11,11 @@ class InitialRecordService {
 
     public async updateScheduler(): Promise<void> {
         try {
-            const rescheduleResult = await this.schedulerServcice.scheduleOnStartUp();
-            console.log (`Rescheduled services from the previous run:  ${rescheduleResult}`);
+            //const rescheduleResult = await this.schedulerServcice.scheduleOnStartUp();
+            //console.log (`Rescheduled services from the previous run:  ${rescheduleResult}`);
     
-            const updateresults = await this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: ["AC"], reRunRequire: false}}); 
-            console.log("Updated schedule jobs from AC status to CA status: ", updateresults);
+            //const updateresults = await this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: ["AC"], reRunRequire: false}}); 
+            //console.log("Updated schedule jobs from AC status to CA status: ", updateresults);
         }
          catch (error) {
             throw new Exception (error); 

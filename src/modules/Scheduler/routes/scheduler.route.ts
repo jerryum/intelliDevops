@@ -15,11 +15,11 @@ class SchedulerRoute implements Routes {
   private initializeRoutes() {
     this.router.post('/scheduler', authMiddleware, this.schedulerController.createCronSchedule);
     this.router.get('/scheduler/:schedulerId', authMiddleware, this.schedulerController.getScheduledCronBySchedulerId);
-    this.router.get('/scheduler/:accountId', authMiddleware, this.schedulerController.getScheduledCronByAccountId);
-    this.router.get('/scheduler/:clusterId', authMiddleware, this.schedulerController.getScheduledCronByClusterId);
+    this.router.get('/scheduler/account/:accountId', authMiddleware, this.schedulerController.getScheduledCronByAccountId);
+    this.router.get('/scheduler/cluster/:clusterId', authMiddleware, this.schedulerController.getScheduledCronByClusterId);
     this.router.delete('/scheduler/:schedulerId', authMiddleware, this.schedulerController.cancelCronScheduleBySchedulerId);
-    this.router.delete('/scheduler/:accountId', authMiddleware, this.schedulerController.cancelCronScheduleByAccountId);
-    this.router.delete('/scheduler/:clusterId', authMiddleware, this.schedulerController.cancelCronScheduleByClusterId);
+    this.router.delete('/scheduler/account/:accountId', authMiddleware, this.schedulerController.cancelCronScheduleByAccountId);
+    this.router.delete('/scheduler/cluster/:clusterId', authMiddleware, this.schedulerController.cancelCronScheduleByClusterId);
 
   }
 }

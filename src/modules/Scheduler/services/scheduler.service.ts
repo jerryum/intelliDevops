@@ -49,7 +49,7 @@ class SchedulerService {
 
     let filteredScheduledCronTasks;
     let i = 0;
-    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId } });
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId, scheduleStatus: 'AC' } });
     if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
 
     allScheduledCronTasks.forEach((job) => {
@@ -80,7 +80,7 @@ class SchedulerService {
 
     let filteredScheduledCronTasks;
     let i = 0;
-    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId } });
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId, scheduleStatus: 'AC'  } });
     if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
 
     allScheduledCronTasks.forEach((job) => {
