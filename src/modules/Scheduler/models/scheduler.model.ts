@@ -20,6 +20,8 @@ export type ScheduleCreationAttributes = Optional<
   | 'scheduleStatus'
   | 'reRunRequire'
   | 'timezone'
+  | 'accountId'
+  | 'clusterId'
 >;
 
 export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> implements ISchedule {
@@ -38,6 +40,8 @@ export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> 
     public scheduleStatus: string;
     public reRunRequire: boolean;
     public timezone: string;
+    public accountId: string;
+    public clusterId: string;
 }
 
 export default function (sequelize: Sequelize): typeof ScheduleModel {
@@ -106,6 +110,13 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
       timezone: {
         type: DataTypes.STRING(100),
       },
+      accountId: {
+        type: DataTypes.STRING(50),
+      },
+      clusterId: {
+        type: DataTypes.STRING(50),
+      },
+
     },
     {
       tableName: 'Scheduler',

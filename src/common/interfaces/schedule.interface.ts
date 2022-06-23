@@ -19,4 +19,6 @@ export interface ISchedule {
     scheduleStatus: string;
     reRunRequire: boolean;
     timezone: string;
+    accountId: string;
+    clusterId: string;
 }

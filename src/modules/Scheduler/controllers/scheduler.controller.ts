@@ -21,7 +21,7 @@ class SchedulerController {
 
   public cancelCronScheduleBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const schedulerId = req.body.schedulerId;
+      const schedulerId = req.params.schedulerId;
       const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
 
       if (!scheduledTask) {
@@ -34,6 +34,39 @@ class SchedulerController {
       next(error);
     }
   };
+
+  public cancelCronScheduleByAccountId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const accountId = req.params.accountId;
+      const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(accountId);
+
+      if (!scheduledTask) {
+        return res.sendStatus(404);
+      }
+
+      await this.schedulerService.cancelScheduledCronTaskUnderAccountId(accountId);
+      res.status(200).json({ message: `Scheduled cron task under accountId ${accountId} request has been cancelled` });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public cancelCronScheduleByClusterId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const clusterId = req.params.clusterId;
+      const scheduledTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(clusterId);
+
+      if (!scheduledTask) {
+        return res.sendStatus(404);
+      }
+
+      await this.schedulerService.cancelScheduledCronTaskUnderClusterId(clusterId);
+      res.status(200).json({ message: `Scheduled cron task under accountId ${clusterId} request has been cancelled` });
+    } catch (error) {
+      next(error);
+    }
+  };
+
 
   public getScheduledCronBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -52,6 +85,45 @@ class SchedulerController {
       next(error);
     }
   };
+
+  public getScheduledCronByAccountId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const accountId = req.params.accountId;
+      console.log (req.params.accountId);
+      const scheduledCronTask: ISchedule[] = await this.schedulerService.getScheduledCronTaskByAccountId(accountId);
+
+      if (scheduledCronTask) {
+        res.status(200).json({ data: scheduledCronTask, message: 'success' });
+        return;
+      } else {
+        res.status(404).json({ message: `Scheduled cron task under account id(${accountId}) not found` });
+        return;
+      }
+    } catch (error) {
+      next(error);
+    }
+  };  
+
+  public getScheduledCronByClusterId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const clusterId = req.params.clusterId;
+      console.log (req.params.clusterId);
+      const scheduledCronTask: ISchedule[] = await this.schedulerService.getScheduledCronTaskByClusterId(clusterId);
+
+      if (scheduledCronTask) {
+        res.status(200).json({ data: scheduledCronTask, message: 'success' });
+        return;
+      } else {
+        res.status(404).json({ message: `Scheduled cron task under cluster id(${clusterId}) not found` });
+        return;
+      }
+    } catch (error) {
+      next(error);
+    }
+  };  
+
+
+
 }
 
 export default SchedulerController;

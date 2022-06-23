@@ -16,28 +16,106 @@ class SchedulerService {
   public scheduler = DB.Scheduler;
   
 
-  public async getScheduledCronTaskBySchedulerId(schedulerId: string): Promise<ISchedule> {
-    if (isEmpty(schedulerId)) throw new HttpException(400, 'Missing schedulerId');
+  public async getScheduledCronTaskBySchedulerId(scheduleId: string): Promise<ISchedule> {
+    if (isEmpty(scheduleId)) throw new HttpException(400, 'Missing schedulerId');
 
-    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: schedulerId } });
+    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: scheduleId } });
     if (!getScheduledCronTask) throw new HttpException(404, "can't find the schedulerId information in the database");
+    let scheduleStatus = getScheduledCronTask.scheduleStatus; 
+    const target_job= MyScheduler.scheduledJobs[scheduleId];
+    
+    if (!target_job) {
+      if (scheduleStatus=='AC') {
+        let updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "can't update status of scheduler db");
+          },
+        );
+      } //end of if scheduleStatus==AC 
 
-    const cronResult = JSON.stringify(getScheduledCronTask);
-    console.log(cronResult);
-
-    const target_job= MyScheduler.scheduledJobs[schedulerId];
-    console.log("target job: ", target_job); 
-    if (!target_job) throw new HttpException(409, "the job is not in crontab");
+      throw new HttpException(409, "the job is not in crontab");
+    } // end of if !target_job 
+    
     return getScheduledCronTask;
   }
+
+  public async getScheduledCronTaskByAccountId(accountId: string): Promise<ISchedule[]> {
+    if (isEmpty(accountId)) throw new HttpException(400, 'Missing accountId');
+
+    let filteredScheduledCronTasks;
+    let i = 0;
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId } });
+    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
+
+    allScheduledCronTasks.forEach((job) => {
+      let scheduleId = job.scheduleId;
+      let target_job= MyScheduler.scheduledJobs[scheduleId];
+      if (target_job) {
+        filteredScheduledCronTasks[i] = job;
+      }
+      else { 
+        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "can't update status of scheduler db");
+          },
+        );
+      }
+      i++;
+    });
+    return filteredScheduledCronTasks;
+  }
+
+  public async getScheduledCronTaskByClusterId(clusterId: string): Promise<ISchedule[]> {
+    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing accountId');
+
+    let filteredScheduledCronTasks;
+    let i = 0;
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId } });
+    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
+
+    allScheduledCronTasks.forEach((job) => {
+      let scheduleId = job.scheduleId;
+      let target_job= MyScheduler.scheduledJobs[scheduleId];
+      if (target_job) {
+        filteredScheduledCronTasks[i] = job;
+      }
+      else { 
+        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "can't update status of scheduler db");
+          },
+        );
+      }
+      i++;
+    });
+    return filteredScheduledCronTasks;
+  }
+
 
   public async cancelScheduledCronTask(schedulerId: string) {
     if (isEmpty(schedulerId)) throw new HttpException(400, 'Missing schedulerId');
 
     try {
       const target_job = MyScheduler.scheduledJobs[schedulerId];
-         target_job.cancel();
-         console.log("job cancelled");
+      if (target_job) {
+        target_job.cancel();
+        console.log("job cancelled");
+      }
     } catch(error)
       {throw new HttpException(400, 'Fail to cancel the requested schedule ');};
 
@@ -52,6 +130,66 @@ class SchedulerService {
       },
     );
   }
+
+  public async cancelScheduledCronTaskUnderAccountId(accountId: string): Promise<ISchedule[]> {
+    if (isEmpty(accountId)) throw new HttpException(400, 'Missing accountId');
+
+    let filteredScheduledCronTasks;
+    let i = 0;
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId } });
+    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
+
+    allScheduledCronTasks.forEach((job) => {
+      let scheduleId = job.scheduleId;
+      let target_job= MyScheduler.scheduledJobs[scheduleId];
+      if (target_job) {
+        target_job.cancel();
+
+        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "can't update status of scheduler db");
+          },
+        );
+      }
+      i++;
+    });
+    return filteredScheduledCronTasks;
+  }  
+
+  public async cancelScheduledCronTaskUnderClusterId(clusterId: string): Promise<ISchedule[]> {
+    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing accountId');
+
+    let filteredScheduledCronTasks;
+    let i = 0;
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId } });
+    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
+
+    allScheduledCronTasks.forEach((job) => {
+      let scheduleId = job.scheduleId;
+      let target_job= MyScheduler.scheduledJobs[scheduleId];
+      if (target_job) {
+        target_job.cancel();
+
+        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "can't update status of scheduler db");
+          },
+        );
+      }
+      i++;
+    });
+    return filteredScheduledCronTasks;
+  }    
 
   public async CreateCronSchedule(CronRequestData: CreateCronScheduleDto): Promise<IScheduleResponse> {
     if (isEmpty(CronRequestData)) throw new HttpException(401, 'Scheduling request data cannot be blank');
@@ -123,11 +261,6 @@ class SchedulerService {
     {throw new HttpException(500, 'Fail to create the requested schedule '); };
   } // end of CreateCronSchedule
 
-  public sleep (ms) {
-    return new Promise((resolve)=> {
-        setTimeout (resolve, ms);
-        });
-  }
 
   public async scheduleOnStartUp(): Promise<any> {
 
