@@ -1,23 +1,36 @@
 import { IsString, IsNotEmpty, IsNumber, IsDate } from 'class-validator';
 import { json } from 'sequelize';
 
-export class CreateCronScheduleDto {
-  @IsNotEmpty()
-  public cronTab: string;
+export class CreateCronScheduleDto{
+    @IsNotEmpty()
+    public cronTab: string;
 
-  @IsNotEmpty()
-  public apiUrl: string;
+    @IsNotEmpty()
+    public apiUrl: string;
 
-  @IsNotEmpty()
-  public name: string;
+    @IsNotEmpty()
+    public name: string;
 
-  public summary: string;
+    @IsNotEmpty()
+    public summary: string;
 
-  public apiBody: object;
+    @IsNotEmpty()
+    public apiBody: object;
 
-  //public scheduleKey: number;
+    public scheduleFrom: Date;
+
+    public scheduleTo: Date;
+
+    @IsNotEmpty()
+    public reRunRequire: boolean;
+
+    public timezone: string;
+
+    public accountId: string;
+
+    public clusterId: string;
 }
 
 export interface ICancelScheduledCronTaskDto {
-  apiId: number;
+  apiId: string;
 }
