@@ -117,6 +117,23 @@ class SchedulerController {
     }
   };  
 
+  public getAllCronByClusterId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const clusterId = req.params.clusterId;
+      
+      const scheduledCronTask: ISchedule[] = await this.schedulerService.getAllCronTaskByClusterId(clusterId);
+
+      if (scheduledCronTask) {
+        res.status(200).json({ data: scheduledCronTask, message: 'success' });
+        return;
+      } else {
+        res.status(404).json({ message: `Scheduled cron task under cluster id(${clusterId}) not found` });
+        return;
+      }
+    } catch (error) {
+      next(error);
+    }
+  };  
 
 
 }

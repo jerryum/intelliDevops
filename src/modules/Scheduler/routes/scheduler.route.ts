@@ -17,6 +17,7 @@ class SchedulerRoute implements Routes {
     this.router.get('/scheduler/:schedulerId', authMiddleware, this.schedulerController.getScheduledCronBySchedulerId);
     this.router.get('/scheduler/account/:accountId', authMiddleware, this.schedulerController.getScheduledCronByAccountId);
     this.router.get('/scheduler/cluster/:clusterId', authMiddleware, this.schedulerController.getScheduledCronByClusterId);
+    this.router.get('/scheduler/cluster/all/:clusterId', authMiddleware, this.schedulerController.getAllCronByClusterId);
     this.router.delete('/scheduler/:schedulerId', authMiddleware, this.schedulerController.cancelCronScheduleBySchedulerId);
     this.router.delete('/scheduler/account/:accountId', authMiddleware, this.schedulerController.cancelCronScheduleByAccountId);
     this.router.delete('/scheduler/cluster/:clusterId', authMiddleware, this.schedulerController.cancelCronScheduleByClusterId);
