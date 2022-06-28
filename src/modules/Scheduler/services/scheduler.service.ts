@@ -78,7 +78,7 @@ class SchedulerService {
   }
 
   public async getScheduledCronTaskByClusterId(clusterId: string): Promise<ISchedule[]> {
-    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing accountId');
+    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing clusterId');
 
     let filteredScheduledCronTasks=[];
     let i = 0;
@@ -270,28 +270,27 @@ class SchedulerService {
 
   public async scheduleOnStartUp(): Promise<any> {
 
+      console.log("Starting jobs on startup");
       try {
-          console.log("Starting jobs on startup");
           let allScheduledTasks: Array<ISchedule> = await this.scheduler.findAll({ where: { scheduleStatus: "AC", reRunRequire: true } });
-          console.log("All suspended & scheduled tasks: ", allScheduledTasks);
-          
+          //console.log("All suspended & scheduled tasks: ", allScheduledTasks);
           const x_auth_token = config.auth.sudory_x_auth_token;
-
-          var apiMessage = {};
+          
           var responseData=[];
 
-          const apiHeader = {headers: {'x_auth_token': x_auth_token}};
-
+          let apiHeader = {headers: {'x_auth_token': x_auth_token}};
+          
           allScheduledTasks.forEach((job) => {
+
             let uuid = require('uuid');
             let schedulerId = uuid.v1();
 
             let scheduleName = job.scheduleName;
             let scheduleSummary = job.scheduleSummary; 
-            apiMessage = { scheduleName, scheduleSummary,  ...job.scheduleApiBody};
+
             const task = MyScheduler.scheduleJob(schedulerId, {start: job.scheduleFrom, end: job.scheduleTo, rule: job.scheduleCronTab, tz: job.timezone}, function(){
                       console.log(`Job ${schedulerId} is inititaed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab} `);
-                      axios.post(job.scheduleApiUrl,apiMessage,apiHeader)
+                      axios.post(job.scheduleApiUrl, job.scheduleApiBody, apiHeader)
                       .then
                         (
                           (response) => {
@@ -302,7 +301,6 @@ class SchedulerService {
                           (error) => {
                               task.cancel();
                               console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}`);
-                              throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
                           } // error
                         ) // close of .then
                       } // close of schedulejob function
@@ -335,9 +333,11 @@ class SchedulerService {
                   });
 
                   this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: ["AC"], scheduleId: job.scheduleId}}); 
-                }); // end of forEach
+            
+          }); // end of forEach
+
       } catch(error){
-        throw new HttpException(400, 'Fail to cancel the requested schedule ');
+        throw new HttpException(400, 'Fail to cancel the requested schedule');
       };
       return responseData;
     }

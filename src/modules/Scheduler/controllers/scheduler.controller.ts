@@ -102,7 +102,7 @@ class SchedulerController {
   public getScheduledCronByClusterId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const clusterId = req.params.clusterId;
-      console.log (req.params.clusterId);
+      
       const scheduledCronTask: ISchedule[] = await this.schedulerService.getScheduledCronTaskByClusterId(clusterId);
 
       if (scheduledCronTask) {
