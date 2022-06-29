@@ -135,6 +135,23 @@ class SchedulerController {
     }
   };  
 
+  public getAllCronByAccountId = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const accountId = req.params.accountId;
+      
+      const scheduledCronTask: ISchedule[] = await this.schedulerService.getAllCronTaskByAccountId(accountId);
+
+      if (scheduledCronTask) {
+        res.status(200).json({ data: scheduledCronTask, message: 'success' });
+        return;
+      } else {
+        res.status(404).json({ message: `Scheduled cron task under account id(${accountId}) not found` });
+        return;
+      }
+    } catch (error) {
+      next(error);
+    }
+  };    
 
 }
 

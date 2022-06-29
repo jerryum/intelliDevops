@@ -78,7 +78,7 @@ class SchedulerService {
   }
 
   public async getAllCronTaskByClusterId(clusterId: string): Promise<ISchedule[]> {
-    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing accountId');
+    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing clusterId');
 
     const scheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId, scheduleStatus: 'AC' } });
     if (!scheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
@@ -105,6 +105,36 @@ class SchedulerService {
 
     return allScheduledCronTasks;
   } 
+
+  public async getAllCronTaskByAccountId(accountId: string): Promise<ISchedule[]> {
+    if (isEmpty(accountId)) throw new HttpException(400, 'Missing accountId');
+
+    const scheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: accountId, scheduleStatus: 'AC' } });
+    if (!scheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
+
+    scheduledCronTasks.forEach((job) => {
+      let scheduleId = job.scheduleId;
+      let target_job= MyScheduler.scheduledJobs[scheduleId];
+      if (!target_job) {
+        const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "can't update status of scheduler db");
+          },
+        );
+      }
+    });
+
+    const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId } });
+    if (!allScheduledCronTasks) throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
+
+    return allScheduledCronTasks;
+  } 
+ 
 
   public async getScheduledCronTaskByClusterId(clusterId: string): Promise<ISchedule[]> {
     if (isEmpty(clusterId)) throw new HttpException(400, 'Missing clusterId');
