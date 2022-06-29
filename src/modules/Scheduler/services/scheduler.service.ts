@@ -20,7 +20,7 @@ class SchedulerService {
   public async getScheduledCronTaskBySchedulerId(scheduleId: string): Promise<object> {
     if (isEmpty(scheduleId)) throw new HttpException(400, 'Missing schedulerId');
 
-    const getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: scheduleId } });
+    var getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleId: scheduleId } });
     if (!getScheduledCronTask) throw new HttpException(404, "can't find the schedulerId information in the database");
     let scheduleStatus = getScheduledCronTask.scheduleStatus; 
     const target_job= MyScheduler.scheduledJobs[scheduleId];
@@ -37,9 +37,8 @@ class SchedulerService {
             throw new HttpException(409, "can't update status of scheduler db");
           },
         );
+        getScheduledCronTask = await this.scheduler.findOne({ where: { scheduleId: scheduleId } });
       } //end of if scheduleStatus==AC 
-
-      throw new HttpException(409, "the job is not in crontab");
     } // end of if !target_job 
     
     return getScheduledCronTask;
