@@ -14,8 +14,6 @@ import config from '@/config';
 
 class SchedulerService {
   public scheduler = DB.Scheduler;
-  
-
 
   public async getScheduledCronTaskBySchedulerId(scheduleId: string): Promise<object> {
     if (isEmpty(scheduleId)) throw new HttpException(400, 'Missing schedulerId');
@@ -324,6 +322,33 @@ class SchedulerService {
     } catch (error) // eond of try
     {throw new HttpException(500, 'Fail to create the requested schedule '); };
   } // end of CreateCronSchedule
+
+
+  public async getScheduledCronTaskByNameByClusterId(scheduleName: string, clusterId: string): Promise<ISchedule> {
+    if (isEmpty(scheduleName)) throw new HttpException(400, 'Missing schedulerId');
+    if (isEmpty(clusterId)) throw new HttpException(400, 'Missing schedulerId');
+
+    var getScheduledCronTask: ISchedule = await this.scheduler.findOne({ where: { scheduleName: scheduleName, clusterId: clusterId, scheduleStatus: "AC" }});
+    if (!getScheduledCronTask) throw new HttpException(404, "can't find the active schedule information from the database");
+
+    const target_job= MyScheduler.scheduledJobs[getScheduledCronTask.scheduleId];
+    
+    if (!target_job) {
+        let updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+        this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: getScheduledCronTask.scheduleId } }).then(
+          (result: any) => {
+            console.log('cancelled job - db updated', result);
+            throw new HttpException(404, "can't find the active schedule infomration from the database");
+          },
+          (error: any) => {
+            console.log('cancelled job - db update failed', error);
+            throw new HttpException(409, "No active schedule, DB & schedule status out of sync and can't update status of scheduler db");
+          },
+        );
+    } // end of if !target_job 
+    
+    return getScheduledCronTask;
+  }
 
 
   public async scheduleOnStartUp(): Promise<any> {
