@@ -257,7 +257,7 @@ class SchedulerService {
     if (isEmpty(CronRequestData)) throw new HttpException(401, 'Scheduling request data cannot be blank');
 
     try {
-      const x_auth_token = config.auth.sudory_x_auth_token;
+      //const x_auth_token = config.auth.sudory_x_auth_token;
       const { name, summary, apiBody, apiUrl, cronTab, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId } = CronRequestData;
       console.log (CronRequestData);
       var apiMessage = {};
@@ -269,23 +269,29 @@ class SchedulerService {
       const schedulerId = uuid.v1();
 
       apiMessage = { name, summary,  ...apiBody};
-      const apiHeader = {headers: {'x_auth_token': x_auth_token}};
-      console.log(apiMessage);
-      console.log(schedulerId);
+      //const apiHeader = {headers: {'x_auth_token': x_auth_token}};
+
       const task = MyScheduler.scheduleJob(schedulerId, {start: scheduleFrom, end: scheduleTo, rule: cronTab, tz: timezone}, function(){
-          console.log(`Job ${schedulerId} is inititaed, name: ${name}, crontab: ${cronTab}`);
-          axios.post(apiUrl,apiMessage,apiHeader)
+          console.log(`Job ${schedulerId} is inititaed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
+          if (name=="SyncMetricReceived") {
+            console.log (apiUrl);
+            console.log (apiMessage);
+          }
+          axios.post(apiUrl,apiMessage)
           .then
             (
               (response) => {
                 const status = response.data.status;
                 responseData=response.data;
-                console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}`, status);
+                console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
               },
               (error) => {
                   task.cancel();
-                  console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}`);
-                  throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+                  //const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
+                  //const updateDataResult = this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: schedulerId } }); 
+                  //console.log (updateDataResult); 
+                  console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
+                  //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
               } // error
             ) // close of .then
           } // close of schedulejob function
@@ -315,7 +321,7 @@ class SchedulerService {
             },
             (error) => {
           console.log("Job request can't be saved due to database related error: ", error);
-          throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+          //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
         });
 
         const result: IScheduleResponse = {scheduleKey: schedulerId, responseData: responseData};
@@ -358,7 +364,8 @@ class SchedulerService {
       try {
           let allScheduledTasks: Array<ISchedule> = await this.scheduler.findAll({ where: { scheduleStatus: "AC", reRunRequire: true } });
           //console.log("All suspended & scheduled tasks: ", allScheduledTasks);
-          const x_auth_token = config.auth.sudory_x_auth_token;
+
+          let x_auth_token = config.auth.sudory_x_auth_token;
           
           var responseData=[];
 
@@ -368,23 +375,19 @@ class SchedulerService {
 
             let uuid = require('uuid');
             let schedulerId = uuid.v1();
-
-            let scheduleName = job.scheduleName;
-            let scheduleSummary = job.scheduleSummary; 
-
             const task = MyScheduler.scheduleJob(schedulerId, {start: job.scheduleFrom, end: job.scheduleTo, rule: job.scheduleCronTab, tz: job.timezone}, function(){
-                      console.log(`Job ${schedulerId} is inititaed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab} `);
+                      console.log(`Job ${schedulerId} is inititaed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId} `);
                       axios.post(job.scheduleApiUrl, job.scheduleApiBody, apiHeader)
                       .then
                         (
                           (response) => {
                             const status = response.data.status;
                             responseData.push(response.data);
-                            console.log(`Job ${schedulerId} is processed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}`, status);
+                            console.log(`Job ${schedulerId} is processed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId}`, status);
                           },
                           (error) => {
                               task.cancel();
-                              console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}`);
+                              console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId}`);
                           } // error
                         ) // close of .then
                       } // close of schedulejob function
@@ -413,7 +416,7 @@ class SchedulerService {
                       },
                       (error) => {
                     console.log("Job request can't be saved due to database related error: ", error);
-                    throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+                    //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
                   });
 
                   this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: ["AC"], scheduleId: job.scheduleId}}); 
