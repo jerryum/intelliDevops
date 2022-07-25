@@ -1,7 +1,5 @@
 import { Sequelize, DataTypes, Model, Optional } from 'sequelize';
 import { ISchedule } from '@/common/interfaces/schedule.interface';
-import { UUID } from 'sequelize';
-import { UUIDVersion } from 'class-validator';
 
 export type ScheduleCreationAttributes = Optional<
   ISchedule,

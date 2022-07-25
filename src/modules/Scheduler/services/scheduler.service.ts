@@ -4,7 +4,7 @@ import { isEmpty } from '@/common/utils/util';
 
 import axios from 'axios';
 import MyScheduler from 'node-schedule';
-import { IScheduleResponse,ISchedule } from '@/common/interfaces/schedule.interface';
+import { IScheduleResponse, ISchedule } from '@/common/interfaces/schedule.interface';
 
 import DB from '@/database';
 import config from '@/config';
@@ -273,10 +273,7 @@ class SchedulerService {
 
       const task = MyScheduler.scheduleJob(schedulerId, {start: scheduleFrom, end: scheduleTo, rule: cronTab, tz: timezone}, function(){
           console.log(`Job ${schedulerId} is inititaed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
-          if (name=="SyncMetricReceived") {
-            console.log (apiUrl);
-            console.log (apiMessage);
-          }
+          
           axios.post(apiUrl,apiMessage)
           .then
             (
@@ -287,16 +284,11 @@ class SchedulerService {
               },
               (error) => {
                   task.cancel();
-                  //const updateDataSet = { updatedAt: new Date(), cancelledAt: new Date(), scheduleStatus: 'CA' };
-                  //const updateDataResult = this.scheduler.update({ ...updateDataSet }, { where: { scheduleId: schedulerId } }); 
-                  //console.log (updateDataResult); 
                   console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
-                  //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
               } // error
             ) // close of .then
           } // close of schedulejob function
       );  //close of scheduleJob
-   
 
       await this.scheduler.create(
           {
@@ -329,7 +321,6 @@ class SchedulerService {
     } catch (error) // eond of try
     {throw new HttpException(500, 'Fail to create the requested schedule '); };
   } // end of CreateCronSchedule
-
 
   public async getScheduledCronTaskByNameByClusterId(scheduleName: string, clusterId: string): Promise<ISchedule> {
     if (isEmpty(scheduleName)) throw new HttpException(400, 'Missing schedulerId');
