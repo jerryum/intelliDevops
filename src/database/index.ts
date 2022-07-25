@@ -28,11 +28,14 @@ const sequelize = new Sequelize.Sequelize(database, user, password, {
   pool: {
     min: pool.min,
     max: pool.max,
+    acquire: 60000,
+    idle: 5000
   },
   logQueryParameters: config.nodeEnv === 'development',
-  logging: (query, time) => {
-    logger.info(time + 'ms' + ' ' + query);
-  },
+  logging: console.log,
+//  logging: (query, time) => {
+//    logger.info(time + 'ms' + ' ' + query);
+//  },
   benchmark: true,
 });
 
