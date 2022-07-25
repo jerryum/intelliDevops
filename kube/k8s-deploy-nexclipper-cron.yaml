@@ -10,8 +10,8 @@ data:
   NC_CRON_DB_CONFIG_HOST: "ncdb-mariadb-primary.mariadb.svc.cluster.local"
   NC_CRON_DB_CONFIG_USER: root
   NC_CRON_DB_CONFIG_DB_NAME: nc_cron
-  NC_CRON_DB_CONFIG_POOL_MIN: "1"
-  NC_CRON_DB_CONFIG_POOL_MAX: "60"
+  NC_CRON_DB_CONFIG_POOL_MIN: "2"
+  NC_CRON_DB_CONFIG_POOL_MAX: "7"
   NC_CRON_JWT_SECRET_KEY: test123!
   NC_CRON_LOG_FORMAT: combined
   NC_CRON_CORS_ORIGIN: "true"
