@@ -9,6 +9,8 @@ import { IScheduleResponse, ISchedule } from '@/common/interfaces/schedule.inter
 import DB from '@/database';
 import config from '@/config';
 
+const { Op } = require('sequelize');
+
 
 //import { schedule } from 'node-cron';
 
@@ -355,11 +357,11 @@ class SchedulerService {
       try {
           let allScheduledTasks: Array<ISchedule> = await this.scheduler.findAll({ where: { scheduleStatus: "AC", reRunRequire: true } });
           //console.log("All suspended & scheduled tasks: ", allScheduledTasks);
+          let scheduleId = allScheduledTasks.map (a => a.scheduleId); 
+          //console.log (scheduleId); 
 
           let x_auth_token = config.auth.sudory_x_auth_token;
-          
           var responseData=[];
-
           let apiHeader = {headers: {'x_auth_token': x_auth_token}};
           
           allScheduledTasks.forEach((job) => {
@@ -383,6 +385,7 @@ class SchedulerService {
                         ) // close of .then
                       } // close of schedulejob function
                   );  //close of scheduleJob
+
 
                   this.scheduler.create(
                     {
@@ -408,11 +411,25 @@ class SchedulerService {
                       (error) => {
                     console.log("Job request can't be saved due to database related error: ", error);
                     //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
-                  });
-
-                  this.scheduler.update({scheduleStatus: 'CA'}, {where: {scheduleStatus: ["AC"], scheduleId: job.scheduleId}}); 
-            
+                  });            
           }); // end of forEach
+
+          let updateData = {
+            scheduleStatus: 'CA', 
+            cancelled_at: new Date(),
+          };
+
+          let queryIn = {
+            where: {
+               scheduleStatus: "AC", 
+               scheduleId: {[Op.in]: scheduleId},
+            }};
+
+          this.scheduler.update(
+             updateData, 
+             queryIn
+          ); 
+
 
       } catch(error){
         throw new HttpException(400, 'Fail to cancel the requested schedule');
