@@ -45,6 +45,9 @@ spec:
         envFrom:
           - configMapRef:
               name: ${APP_IMAGE_NAME}-configmap
+        volumeMounts:
+          - name:  log
+            mountPath:  /var/log
         env:
           - name: NC_CRON_DB_CONFIG_PASSWORD
             valueFrom:
@@ -53,6 +56,9 @@ spec:
                 key: mariadb-root-password
         ports:
         - containerPort: 5001
+      volumes:
+        - name:  log
+          emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

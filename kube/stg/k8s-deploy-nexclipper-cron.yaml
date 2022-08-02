@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name:  nc
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name:  ${APP_IMAGE_NAME}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${APP_IMAGE_NAME}-configmap
+  labels:
+    app: ${APP_IMAGE_NAME}
+data:
+  NC_CRON_PORT: "5001"
+  NC_CRON_ENV: production
+  NC_CRON_DB_CONFIG_HOST: "ncdb.prd.nexclipper.local"
+  NC_CRON_DB_CONFIG_DB_NAME: nc_cron
+  NC_CRON_DB_CONFIG_POOL_MIN: "1"
+  NC_CRON_DB_CONFIG_POOL_MAX: "5"
+  NC_CRON_JWT_SECRET_KEY: test123!
+  NC_CRON_LOG_FORMAT: debug
+  NC_CRON_CORS_ORIGIN: "true"
+  NC_CRON_CORS_CREDENTIALS: "true"
+  NC_CRON_SUDORY_X_AUTH_TOKEN: "SUDORY"
+  NC_CRON_X_AUTH_TOKEN: "CRON"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${APP_IMAGE_NAME}
+spec:
+  selector:
+    matchLabels:
+      app: ${APP_IMAGE_NAME}
+  template:
+    metadata:
+      annotations:
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/role: 'nexclipper-app'
+        vault.hashicorp.com/agent-inject-secret-ncdb-admin-login: 'kv/database/ncdb'
+        vault.hashicorp.com/agent-inject-template-ncdb-admin-login: |
+          {{- with secret "kv/database/ncdb" -}}
+          NC_CRON_DB_CONFIG_USER={{ .Data.data.username }}
+          NC_CRON_DB_CONFIG_PASSWORD={{ .Data.data.password }}
+          {{- end -}}
+      labels:
+        app: ${APP_IMAGE_NAME}
+    spec:
+      serviceAccountName: ${APP_IMAGE_NAME}
+      containers:
+      - name: ${APP_IMAGE_NAME}
+        image: ${IMG_TAG_TO_DEPLOY}
+        resources: {}
+        livenessProbe:
+          tcpSocket:
+            port: 5001
+          initialDelaySeconds: 15
+          timeoutSeconds: 15
+        volumeMounts:
+          - name:  log
+            mountPath:  /var/log
+        envFrom:
+          - configMapRef:
+              name: ${APP_IMAGE_NAME}-configmap
+        ports:
+        - containerPort: 5001
+      volumes:
+        - name:  log
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${APP_IMAGE_NAME}
+spec:
+  selector:
+    app: ${APP_IMAGE_NAME}
+  ports:
+  - port: 5001
+    targetPort: 5001
