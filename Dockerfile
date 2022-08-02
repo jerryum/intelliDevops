@@ -14,6 +14,8 @@ COPY  ./package.json ./package-lock.json  ${WORKDIR}
 COPY docker-entrypoint.sh ${WORKDIR}
 
 RUN chmod +x  ${WORKDIR}docker-entrypoint.sh
+RUN apk update && apk add jq
+RUN jq .version ${WORKDIR}/package.json -r > /root/version.txt
 
 RUN npm ci
 
