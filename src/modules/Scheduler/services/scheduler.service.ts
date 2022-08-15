@@ -8,6 +8,7 @@ import { IScheduleResponse, ISchedule } from '@/common/interfaces/schedule.inter
 
 import DB from '@/database';
 import config from '@/config';
+import { SequelizeScopeError } from 'sequelize/types';
 
 const { Op } = require('sequelize');
 
@@ -352,20 +353,17 @@ class SchedulerService {
 
 
   public async scheduleOnStartUp(): Promise<any> {
-
+      const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
       console.log("Starting jobs on startup");
       try {
           let allScheduledTasks: Array<ISchedule> = await this.scheduler.findAll({ where: { scheduleStatus: "AC", reRunRequire: true } });
-          //console.log("All suspended & scheduled tasks: ", allScheduledTasks);
           let scheduleId = allScheduledTasks.map (a => a.scheduleId); 
-          //console.log (scheduleId); 
 
           let x_auth_token = config.auth.sudory_x_auth_token;
           var responseData=[];
           let apiHeader = {headers: {'x_auth_token': x_auth_token}};
           
           allScheduledTasks.forEach((job) => {
-
             let uuid = require('uuid');
             let schedulerId = uuid.v1();
             const task = MyScheduler.scheduleJob(schedulerId, {start: job.scheduleFrom, end: job.scheduleTo, rule: job.scheduleCronTab, tz: job.timezone}, function(){
@@ -385,8 +383,6 @@ class SchedulerService {
                         ) // close of .then
                       } // close of schedulejob function
                   );  //close of scheduleJob
-
-
                   this.scheduler.create(
                     {
                       scheduleId: schedulerId,
@@ -411,7 +407,8 @@ class SchedulerService {
                       (error) => {
                     console.log("Job request can't be saved due to database related error: ", error);
                     //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
-                  });            
+                  });
+                  sleep(200);   
           }); // end of forEach
 
           let updateData = {
