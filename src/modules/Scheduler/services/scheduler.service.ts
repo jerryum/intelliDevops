@@ -8,7 +8,9 @@ import { IScheduleResponse, ISchedule } from '@/common/interfaces/schedule.inter
 
 import DB from '@/database';
 import config from '@/config';
-import { SequelizeScopeError } from 'sequelize/types';
+//import { SequelizeScopeError } from 'sequelize/types';
+//import {execSync} from 'child_process';
+//import { setTimeout } from 'timers/promises';
 
 const { Op } = require('sequelize');
 
@@ -353,62 +355,69 @@ class SchedulerService {
 
 
   public async scheduleOnStartUp(): Promise<any> {
-      const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+
+      const msWait = parseInt(config.msWait);
+      const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
       console.log("Starting jobs on startup");
       try {
           let allScheduledTasks: Array<ISchedule> = await this.scheduler.findAll({ where: { scheduleStatus: "AC", reRunRequire: true } });
           let scheduleId = allScheduledTasks.map (a => a.scheduleId); 
-
+          //let timer = ms => new Promise(res => setTimeout(res, ms))
           let x_auth_token = config.auth.sudory_x_auth_token;
           var responseData=[];
           let apiHeader = {headers: {'x_auth_token': x_auth_token}};
           
-          allScheduledTasks.forEach((job) => {
-            let uuid = require('uuid');
-            let schedulerId = uuid.v1();
-            const task = MyScheduler.scheduleJob(schedulerId, {start: job.scheduleFrom, end: job.scheduleTo, rule: job.scheduleCronTab, tz: job.timezone}, function(){
-                      console.log(`Job ${schedulerId} is inititaed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId} `);
-                      axios.post(job.scheduleApiUrl, job.scheduleApiBody, apiHeader)
-                      .then
-                        (
-                          (response) => {
-                            const status = response.data.status;
-                            responseData.push(response.data);
-                            console.log(`Job ${schedulerId} is processed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId}`, status);
-                          },
-                          (error) => {
-                              task.cancel();
-                              console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId}`);
-                          } // error
-                        ) // close of .then
-                      } // close of schedulejob function
-                  );  //close of scheduleJob
-                  this.scheduler.create(
-                    {
-                      scheduleId: schedulerId,
-                      scheduleName: job.scheduleName,
-                      scheduleSummary: job.scheduleSummary,
-                      scheduleCronTab: job.scheduleCronTab,
-                      scheduleApiUrl: job.scheduleApiUrl,
-                      scheduleApiBody: job.scheduleApiBody,
-                      scheduleFrom: job.scheduleFrom,
-                      scheduleTo: job.scheduleTo,
-                      reRunRequire: job.reRunRequire,
-                      createdAt: new Date(),
-                      timezone: job.timezone,
-                      scheduleStatus: "AC",
-                      clusterId: job.clusterId,
-                      accountId: job.accountId,
-                    })
-                  .then (
-                     (result) => {
-                      console.log("Job saved in database ", schedulerId);
-                      },
-                      (error) => {
-                    console.log("Job request can't be saved due to database related error: ", error);
-                    //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
-                  });
-                  sleep(200);   
+          allScheduledTasks.forEach((job, i) => {
+
+            setTimeout(() => {
+
+              let uuid = require('uuid');
+              let schedulerId = uuid.v1();
+              let task = MyScheduler.scheduleJob(schedulerId, {start: job.scheduleFrom, end: job.scheduleTo, rule: job.scheduleCronTab, tz: job.timezone}, function(){
+                        console.log(`Job ${schedulerId} is inititaed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId} `);
+                        axios.post(job.scheduleApiUrl, job.scheduleApiBody, apiHeader)
+                        .then
+                          (
+                            (response) => {
+                              const status = response.data.status;
+                              responseData.push(response.data);
+                              console.log(`Job ${schedulerId} is processed, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId}`, status);
+                            },
+                            (error) => {
+                                task.cancel();
+                                console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${job.scheduleName}, crontab: ${job.scheduleCronTab}, cluster: ${job.clusterId}`);
+                            } // error
+                          ) // close of .then
+                        } // close of schedulejob function
+                    );  //close of scheduleJob
+                    this.scheduler.create(
+                      {
+                        scheduleId: schedulerId,
+                        scheduleName: job.scheduleName,
+                        scheduleSummary: job.scheduleSummary,
+                        scheduleCronTab: job.scheduleCronTab,
+                        scheduleApiUrl: job.scheduleApiUrl,
+                        scheduleApiBody: job.scheduleApiBody,
+                        scheduleFrom: job.scheduleFrom,
+                        scheduleTo: job.scheduleTo,
+                        reRunRequire: job.reRunRequire,
+                        createdAt: new Date(),
+                        timezone: job.timezone,
+                        scheduleStatus: "AC",
+                        clusterId: job.clusterId,
+                        accountId: job.accountId,
+                      })
+                    .then (
+                      (result) => {
+                        console.log("Job saved in database ", schedulerId);
+                        },
+                        (error) => {
+                      console.log("Job request can't be saved due to database related error: ", error);
+                      //throw new HttpException(500, 'Scheduling request cannot be saved due to unexpoected error');
+                    });
+
+            }, i * msWait); //end of setTimeOut       
+
           }); // end of forEach
 
           let updateData = {
@@ -436,3 +445,4 @@ class SchedulerService {
 }
 
 export default SchedulerService;
+

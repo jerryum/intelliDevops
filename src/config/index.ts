@@ -17,6 +17,7 @@ export default {
   appPort: process.env.NC_CRON_PORT || 5010,
   nodeEnv: process.env.NC_CRON_ENV || 'development',
   logFormat: process.env.NC_CRON_LOG_FORMAT,
+  msWait: process.env.NC_CRON_WAIT_MS_SEC || "300",
   cors: {
     allowAnyOrigin: process.env.NC_CRON_CORS_ORIGIN === 'true' ? Boolean(process.env.NC_CRON_CORS_ORIGIN) : process.env.NC_CRON_CORS_ORIGIN,
     credentials: process.env.NC_CRON_CORS_CREDENTIALS === 'true',
