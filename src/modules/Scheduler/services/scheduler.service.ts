@@ -261,7 +261,7 @@ class SchedulerService {
     try {
       //const x_auth_token = config.auth.sudory_x_auth_token;
       const { name, summary, apiBody, apiUrl, cronTab, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId } = CronRequestData;
-      console.log (CronRequestData);
+      //console.log (CronRequestData);
       var apiMessage = {};
       var responseData;
 
@@ -285,8 +285,8 @@ class SchedulerService {
                 console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
               },
               (error) => {
-                  task.cancel();
-                  console.log(`Job ${schedulerId} cancelled due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
+                  //task.cancel();
+                  console.log(`Job ${schedulerId} failed due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
               } // error
             ) // close of .then
           } // close of schedulejob function
