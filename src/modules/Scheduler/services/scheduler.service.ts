@@ -430,6 +430,7 @@ class SchedulerService {
       const updateData = {
         scheduleStatus: 'CA',
         cancelled_at: new Date(),
+        updatedAt: new Date(),
       };
 
       const queryIn = {
