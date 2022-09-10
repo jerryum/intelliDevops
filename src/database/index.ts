@@ -29,10 +29,10 @@ const sequelize = new Sequelize.Sequelize(database, user, password, {
     min: pool.min,
     max: pool.max,
     acquire: 60000,
-    idle: 10000
+    idle: 10000,
   },
   logQueryParameters: config.nodeEnv === 'development',
-//  logging: console.log,
+  //  logging: console.log,
   logging: (query, time) => {
     logger.info(time + 'ms' + ' ' + query);
   },
@@ -56,6 +56,5 @@ DB.sequelize
     });
   })
   .catch(console.log);
-
 
 export default DB;
