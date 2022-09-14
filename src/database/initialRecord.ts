@@ -16,20 +16,20 @@ class InitialRecordService {
 
     //insert/update Schedule
     let scheduleDataList = [];
+    let uuid = require('uuid');
+
     // let scheduleLength = scheduleList.length;
     for (const scheduleObj of scheduleList) {
-      //TODO: have to find schedule columns data
-      // I don't know how make scheduleID make,
       scheduleDataList.push({
         ...scheduleObj,
         createdAt: new Date(),
+        scheduleId: uuid.v1(),
       });
     }
 
     try {
       await this.scheduler.bulkCreate(scheduleDataList, {
           fields: ["scheduleName", "scheduleId", "createdAt", "scheduleApiUrl", "scheduleCronTab", "scheduleApiBody", "reRunRequire"],
-          updateOnDuplicate: ["scheduleName"]
         }
       );
 
