@@ -1,5 +1,5 @@
 import Sequelize from 'sequelize';
-import { logger } from '@/common/utils/logger';
+import {logger} from '@/common/utils/logger';
 import schedulerModel from '@/modules/Scheduler/models/scheduler.model';
 import config from 'config';
 import InitialRecordService from './initialRecord';
@@ -47,13 +47,25 @@ const DB = {
 };
 
 DB.sequelize
-  .sync({ force: false })
+  .sync({force: false})
   .then(async () => {
     const initialRecordService = new InitialRecordService();
 
-    initialRecordService.updateScheduler().then(() => {
-      console.log('Database connected successfully');
-    });
+    initialRecordService.insertInitialRecords()
+      .then(() => {
+        console.log('Success to insert Initial Records');
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+
+    initialRecordService.updateScheduler()
+      .then(() => {
+        console.log('Succeess to update Scheduler');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   })
   .catch(console.log);
 
