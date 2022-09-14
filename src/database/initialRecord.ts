@@ -15,10 +15,10 @@ class InitialRecordService {
 
     //insert/update Schedule
     let scheduleDataList = [];
-    let scheduleLength = scheduleList.length;
+    // let scheduleLength = scheduleList.length;
     for (const scheduleObj of scheduleList) {
       //TODO: have to find schedule columns data
-
+      // I don't know how make scheduleID make,
       scheduleDataList.push({
         ...scheduleObj,
         createdAt: new Date(),
@@ -27,7 +27,8 @@ class InitialRecordService {
 
     try {
       await this.scheduler.bulkCreate(scheduleDataList,{
-
+          fields: ["scheduleName", "scheduleId", "createdAt", "scheduleApiUrl", "scheduleCronTab", "scheduleApiBody", "reRunRequire"],
+          updateOnDuplicate: ["scheduleName"]
         }
       );
 
