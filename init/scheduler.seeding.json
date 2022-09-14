@@ -1,0 +1,16 @@
+[
+  {
+    "scheduleName": "alertTimeLine",
+    "scheduleApiUrl": "127.0.0.1:3300/v1/resource",
+    "scheduleCronTab": "*/30 * * * *",
+    "scheduleApiBody": "{}",
+    "reRunRequire": true
+  },
+  {
+    "scheduleName": "alertNotiScheduled",
+    "scheduleApiUrl": "",
+    "scheduleCronTab": "*/30 * * * *",
+    "scheduleApiBody": "{}",
+    "reRunRequire": true
+  }
+]
