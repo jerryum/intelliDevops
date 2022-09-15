@@ -18,22 +18,26 @@ class InitialRecordService {
 
     //insert/update nc-notification Schedule
     let notiScheduleDataList = [];
+    let uuid = require('uuid');
 
     for (const scheduleObj of notiScheduleList) {
       let url = notiUrl + scheduleObj.scheduleUrlPath
+      let schedulerId = uuid.v1();
+
       notiScheduleDataList.push({
         ...scheduleObj,
         scheduleApiUrl: url,
+        scheduleId: schedulerId,
         createdAt: new Date(),
       });
     }
 
     try {
       await this.scheduler.bulkCreate(notiScheduleDataList, {
-          fields: ["scheduleName", "createdAt", "scheduleApiUrl", "scheduleCronTab", "scheduleApiBody", "scheduleStatus", "reRunRequire"],
+          fields: ["scheduleName", "createdAt", "scheduleApiUrl", "scheduleId", "scheduleCronTab", "scheduleApiBody", "scheduleStatus", "reRunRequire"],
+          updateOnDuplicate: ['scheduleName'],
         }
       );
-
     } catch (error) {
       console.log("bulk create error: ", error)
     }
