@@ -3,6 +3,7 @@ import SchedulerService from '@/modules/Scheduler/services/scheduler.service';
 import { Exception } from 'handlebars';
 import config from "@/config";
 import { ISchedule } from "@common/interfaces/schedule.interface";
+import { v1 } from "uuid";
 /**
  * @memberof InitialRecordService
  */
@@ -14,7 +15,6 @@ class InitialRecordService {
     // insert, update nc-notification schedule
     const {notificationSchedules: notiScheduleList, notificationUrl: notiUrl} = config.initialRecord;
     let notiScheduleDataList = [];
-    let uuid = require('uuid');
 
     for (const scheduleObj of notiScheduleList) {
       const scheduleData: ISchedule = await this.scheduler.findOne({ where: { scheduleName: scheduleObj.scheduleName } });
@@ -24,7 +24,7 @@ class InitialRecordService {
       }
 
       let url = notiUrl + scheduleObj.scheduleUrlPath
-      let schedulerId = uuid.v1();
+      let schedulerId = v1();
 
       notiScheduleDataList.push({
         ...scheduleObj,
