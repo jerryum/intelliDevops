@@ -1,10 +1,8 @@
 import DB from '@/database';
-import SchedulerService from '@/modules/Scheduler/services/scheduler.service'
-import {Exception} from 'handlebars';
-import {exceptions} from 'winston';
+import SchedulerService from '@/modules/Scheduler/services/scheduler.service';
+import { Exception } from 'handlebars';
 import config from "@/config";
-import {ISchedule} from "@common/interfaces/schedule.interface";
-
+import { ISchedule } from "@common/interfaces/schedule.interface";
 /**
  * @memberof InitialRecordService
  */
@@ -13,11 +11,8 @@ class InitialRecordService {
   public schedulerService = new SchedulerService();
 
   public async insertInitialRecords(): Promise<void> {
-
     // insert, update nc-notification schedule
     const {notificationSchedules: notiScheduleList, notificationUrl: notiUrl} = config.initialRecord;
-
-    //insert/update nc-notification Schedule
     let notiScheduleDataList = [];
     let uuid = require('uuid');
 
@@ -45,7 +40,7 @@ class InitialRecordService {
         }
       );
     } catch (error) {
-      console.log("bulk create error: ", error)
+      throw new Exception(error);
     }
   }
 
@@ -54,13 +49,8 @@ class InitialRecordService {
       const rescheduleResult = await this.schedulerService.scheduleOnStartUp();
       console.log(`Rescheduled services from the previous run:  ${rescheduleResult}`);
 
-      const updateresults = await this.scheduler.update({scheduleStatus: 'CA'}, {
-        where: {
-          scheduleStatus: ["AC"],
-          reRunRequire: false
-        }
-      });
-      console.log("Updated schedule jobs from AC status to CA status: ", updateresults);
+      const updateresults = await this.scheduler.update({ scheduleStatus: 'CA' }, { where: { scheduleStatus: ['AC'], reRunRequire: false } });
+      console.log('Updated schedule jobs from AC status to CA status: ', updateresults);
     } catch (error) {
       throw new Exception(error);
     }

@@ -6,15 +6,26 @@ import { IScheduleResponse, ISchedule } from '@/common/interfaces/schedule.inter
 class SchedulerController {
   public schedulerService = new SchedulerService();
 
-
   public createCronSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, summary, cronTab, apiUrl, apiBody, reRunRequire, timezone, accountId, clusterId} = req.body;
-      var scheduleFrom = req.body.scheduleFrom; 
-      var scheduleTo = req.body.scheduleTo; 
-      if (scheduleFrom=="") scheduleFrom = null;
-      if (scheduleTo=="") scheduleTo = null;
-      const createCronRequest: CreateCronScheduleDto = { name, summary, cronTab, apiUrl, apiBody, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId };
+      const { name, summary, cronTab, apiUrl, apiBody, reRunRequire, timezone, accountId, clusterId } = req.body;
+      let scheduleFrom = req.body.scheduleFrom;
+      let scheduleTo = req.body.scheduleTo;
+      if (scheduleFrom == '') scheduleFrom = null;
+      if (scheduleTo == '') scheduleTo = null;
+      const createCronRequest: CreateCronScheduleDto = {
+        name,
+        summary,
+        cronTab,
+        apiUrl,
+        apiBody,
+        scheduleFrom,
+        scheduleTo,
+        reRunRequire,
+        timezone,
+        accountId,
+        clusterId,
+      };
       const responseCronCreate = await this.schedulerService.CreateCronSchedule(createCronRequest);
       res.status(200).json({ data: responseCronCreate, message: 'Schedule request has been initiated' });
     } catch (error) {
@@ -26,7 +37,7 @@ class SchedulerController {
   public cancelCronScheduleBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const schedulerId = req.params.schedulerId;
- 
+
       await this.schedulerService.cancelScheduledCronTask(schedulerId);
       res.status(200).json({ message: `Scheduled cron task ${schedulerId} request has been cancelled` });
     } catch (error) {
@@ -39,11 +50,10 @@ class SchedulerController {
       const accountId = req.params.accountId;
 
       const cancelResult = await this.schedulerService.cancelScheduledCronTaskUnderAccountId(accountId);
-      if (Object.keys(cancelResult).length == 0) 
-      {
-        res.status(200).json({data: cancelResult, message: `No schedule to delete under accountId ${accountId}` });
-      } else { 
-      res.status(200).json({data: cancelResult, message: `Scheduled cron task(s) under accountId ${accountId} has(have) been cancelled` });
+      if (Object.keys(cancelResult).length == 0) {
+        res.status(200).json({ data: cancelResult, message: `No schedule to delete under accountId ${accountId}` });
+      } else {
+        res.status(200).json({ data: cancelResult, message: `Scheduled cron task(s) under accountId ${accountId} has(have) been cancelled` });
       }
     } catch (error) {
       next(error);
@@ -55,22 +65,20 @@ class SchedulerController {
       const clusterId = req.params.clusterId;
 
       const cancelResult = await this.schedulerService.cancelScheduledCronTaskUnderClusterId(clusterId);
-      if (Object.keys(cancelResult).length == 0) 
-      {
-        res.status(200).json({data: cancelResult, message: `No schedule to delete under accountId ${clusterId}` });
+      if (Object.keys(cancelResult).length == 0) {
+        res.status(200).json({ data: cancelResult, message: `No schedule to delete under accountId ${clusterId}` });
       } else {
-      res.status(200).json({ data: cancelResult, message: `Scheduled cron task(s) under accountId ${clusterId} has(have) been cancelled` });
+        res.status(200).json({ data: cancelResult, message: `Scheduled cron task(s) under accountId ${clusterId} has(have) been cancelled` });
       }
     } catch (error) {
       next(error);
     }
   };
 
-
   public getScheduledCronBySchedulerId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const schedulerId = req.params.schedulerId;
-      console.log (req.params.schedulerId);
+      console.log(req.params.schedulerId);
       const scheduledCronTask = await this.schedulerService.getScheduledCronTaskBySchedulerId(schedulerId);
 
       if (scheduledCronTask) {
@@ -89,7 +97,7 @@ class SchedulerController {
     try {
       const clusterId = req.params.clusterId;
       const scheduleName = req.params.scheduleName;
-      
+
       const scheduledCronTask = await this.schedulerService.getScheduledCronTaskByNameByClusterId(scheduleName, clusterId);
 
       if (scheduledCronTask) {
@@ -107,7 +115,7 @@ class SchedulerController {
   public getScheduledCronByAccountId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const accountId = req.params.accountId;
-      console.log (req.params.accountId);
+      console.log(req.params.accountId);
       const scheduledCronTask: ISchedule[] = await this.schedulerService.getScheduledCronTaskByAccountId(accountId);
 
       if (scheduledCronTask) {
@@ -120,12 +128,12 @@ class SchedulerController {
     } catch (error) {
       next(error);
     }
-  };  
+  };
 
   public getScheduledCronByClusterId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const clusterId = req.params.clusterId;
-      
+
       const scheduledCronTask: ISchedule[] = await this.schedulerService.getScheduledCronTaskByClusterId(clusterId);
 
       if (scheduledCronTask) {
@@ -138,12 +146,12 @@ class SchedulerController {
     } catch (error) {
       next(error);
     }
-  };  
+  };
 
   public getAllCronByClusterId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const clusterId = req.params.clusterId;
-      
+
       const scheduledCronTask: ISchedule[] = await this.schedulerService.getAllCronTaskByClusterId(clusterId);
 
       if (scheduledCronTask) {
@@ -156,12 +164,12 @@ class SchedulerController {
     } catch (error) {
       next(error);
     }
-  };  
+  };
 
   public getAllCronByAccountId = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const accountId = req.params.accountId;
-      
+
       const scheduledCronTask: ISchedule[] = await this.schedulerService.getAllCronTaskByAccountId(accountId);
 
       if (scheduledCronTask) {
@@ -174,8 +182,7 @@ class SchedulerController {
     } catch (error) {
       next(error);
     }
-  };    
-
+  };
 }
 
 export default SchedulerController;
