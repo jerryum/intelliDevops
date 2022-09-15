@@ -37,6 +37,7 @@ spec:
       containers:
       - name: ${APP_IMAGE_NAME}
         image: ${IMG_TAG_TO_DEPLOY}
+        imagePullPolicy: Always
         resources: {}
         livenessProbe:
           tcpSocket:
