@@ -22,13 +22,14 @@ class InitialRecordService {
     let uuid = require('uuid');
 
     for (const scheduleObj of notiScheduleList) {
-      let url = notiUrl + scheduleObj.scheduleUrlPath
-      let schedulerId = uuid.v1();
       const scheduleData: ISchedule = await this.scheduler.findOne({ where: { scheduleName: scheduleObj.scheduleName } });
 
       if (scheduleData) {
         continue
       }
+
+      let url = notiUrl + scheduleObj.scheduleUrlPath
+      let schedulerId = uuid.v1();
 
       notiScheduleDataList.push({
         ...scheduleObj,
