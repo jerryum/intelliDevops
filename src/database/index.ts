@@ -50,22 +50,15 @@ DB.sequelize
   .sync({force: false})
   .then(async () => {
     const initialRecordService = new InitialRecordService();
+    try {
+      await initialRecordService.insertInitialRecords()
 
-    initialRecordService.insertInitialRecords()
-      .then(() => {
-        console.log('Success to insert Initial Records');
-      })
-      .catch((err) => {
-        console.log(err);
-      })
+      await initialRecordService.updateScheduler()
+      console.log("initialization success")
+    } catch (e) {
+      console.log(e)
+    }
 
-    initialRecordService.updateScheduler()
-      .then(() => {
-        console.log('Succeess to update Scheduler');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   })
   .catch(console.log);
 
