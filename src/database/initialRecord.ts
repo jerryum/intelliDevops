@@ -3,6 +3,7 @@ import SchedulerService from '@/modules/Scheduler/services/scheduler.service'
 import {Exception} from 'handlebars';
 import {exceptions} from 'winston';
 import config from "@/config";
+import {ISchedule} from "@common/interfaces/schedule.interface";
 
 /**
  * @memberof InitialRecordService
@@ -23,6 +24,11 @@ class InitialRecordService {
     for (const scheduleObj of notiScheduleList) {
       let url = notiUrl + scheduleObj.scheduleUrlPath
       let schedulerId = uuid.v1();
+      const scheduleData: ISchedule = await this.scheduler.findOne({ where: { scheduleName: scheduleObj.scheduleName } });
+
+      if (scheduleData) {
+        continue
+      }
 
       notiScheduleDataList.push({
         ...scheduleObj,
@@ -35,7 +41,6 @@ class InitialRecordService {
     try {
       await this.scheduler.bulkCreate(notiScheduleDataList, {
           fields: ["scheduleName", "createdAt", "scheduleApiUrl", "scheduleId", "scheduleCronTab", "scheduleApiBody", "scheduleStatus", "reRunRequire"],
-          updateOnDuplicate: ['scheduleName'],
         }
       );
     } catch (error) {
