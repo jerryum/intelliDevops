@@ -3,7 +3,7 @@
     "scheduleName": "alertTimeLine",
     "scheduleCronTab": "*/30 * * * *",
     "scheduleUrlPath": "/v1/alertTimeline/process",
-    "scheduleApiBody": "{}",
+    "scheduleApiBody": {},
     "scheduleStatus": "AC",
     "reRunRequire": true
   },
@@ -11,7 +11,7 @@
     "scheduleName": "alertNotiScheduled",
     "scheduleCronTab": "*/30 * * * *",
     "scheduleUrlPath": "/v1/alertNotiScheduled/send",
-    "scheduleApiBody": "{}",
+    "scheduleApiBody": {},
     "scheduleStatus": "AC",
     "reRunRequire": true
   }
