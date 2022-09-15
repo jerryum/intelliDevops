@@ -10,7 +10,7 @@ How to add config:
 // 2. For value control (default, computed)
 // 3. For security
 import validateEnv from './validateEnv';
-import schedules from '../../init/scheduler.seeding.json';
+import notificationSchedules from '../../init/notiSchedule.seeding.json';
 
 validateEnv();
 
@@ -40,6 +40,7 @@ export default {
     x_auth_token: process.env.NC_CRON_X_AUTH_TOKEN || 'CRON',
   },
   initialRecord: {
-    schedules,
+    notificationUrl: process.env.NC_CRON_NOTI_URL,
+    notificationSchedules,
   },
 };

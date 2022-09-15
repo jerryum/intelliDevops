@@ -12,31 +12,31 @@ class InitialRecordService {
   public schedulerService = new SchedulerService();
 
   public async insertInitialRecords(): Promise<void> {
-    const {schedules: scheduleList} = config.initialRecord;
 
-    //insert/update Schedule
-    let scheduleDataList = [];
-    let uuid = require('uuid');
+    // insert, update nc-notification schedule
+    const {notificationSchedules: notiScheduleList, notificationUrl: notiUrl} = config.initialRecord;
 
-    // let scheduleLength = scheduleList.length;
-    for (const scheduleObj of scheduleList) {
-      scheduleDataList.push({
+    //insert/update nc-notification Schedule
+    let notiScheduleDataList = [];
+
+    for (const scheduleObj of notiScheduleList) {
+      let url = notiUrl + scheduleObj.scheduleUrlPath
+      notiScheduleDataList.push({
         ...scheduleObj,
+        scheduleApiUrl: url,
         createdAt: new Date(),
-        scheduleId: uuid.v1(),
       });
     }
 
     try {
-      await this.scheduler.bulkCreate(scheduleDataList, {
-          fields: ["scheduleName", "scheduleId", "createdAt", "scheduleApiUrl", "scheduleCronTab", "scheduleApiBody", "reRunRequire"],
+      await this.scheduler.bulkCreate(notiScheduleDataList, {
+          fields: ["scheduleName", "createdAt", "scheduleApiUrl", "scheduleCronTab", "scheduleApiBody", "scheduleStatus", "reRunRequire"],
         }
       );
 
     } catch (error) {
       console.log("bulk create error: ", error)
     }
-
   }
 
   public async updateScheduler(): Promise<void> {
