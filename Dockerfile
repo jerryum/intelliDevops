@@ -1,15 +1,16 @@
 # Common build stage
-FROM node:lts-alpine as common-build-stage
+FROM node:16-alpine as common-build-stage
 
 ENV WORKDIR=/usr/src/app/ \
-    NAME=nexclipper-mqcomm \
+    NAME=nexclipper-cron \
     USER=nexclipperuser \
     USER_ID=1002 \
     GROUP=nexclipper
 
 WORKDIR ${WORKDIR}
 
-COPY  ./package.json ./package-lock.json  ${WORKDIR}
+COPY  ./package.json ${WORKDIR}
+COPY ./package-lock.json ${WORKDIR}
 
 COPY docker-entrypoint.sh ${WORKDIR}
 
@@ -27,17 +28,7 @@ USER ${USER}
 
 EXPOSE 5001
 
-##Development build stage
-FROM common-build-stage as development-build-stage
-
-ENV NODE_ENV development
-
-CMD [ "npm","run","dev" ]
-
-# Production build stage
-FROM common-build-stage as production-build-stage
-
-# ENV NODE_ENV production
+ENV NODE_ENV production
 
 ENTRYPOINT [ "sh","./docker-entrypoint.sh" ]
 
