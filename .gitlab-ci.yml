@@ -51,6 +51,23 @@ docker-build-commit:
   rules:
     - if: $CI_COMMIT_BRANCH =~ /\b^(issue|feature|bugfix|improvement).*$\b/
 
+deploy-nexclipper-cron-commit:
+  stage: dev
+  image: repo.nexclipper.io/nexclipper/helm-kubectl:latest
+  variables:
+    HARBOR_NEXCLIPPER_PROJECT: "nexclipper-dev"
+  before_script:
+    - echo -e "\nLogin to Kubernetes"
+    - source /data/scripts/login-cluster.sh dev
+  script:
+    - "source /data/scripts/deploy.sh dev nc"
+  needs: 
+    - job: "docker-build-commit"
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /\b^(issue|feature|bugfix|improvement).*$\b/
+      when: manual
+
+
 docker-build-dev:
   stage: dev
   variables:
@@ -69,6 +86,8 @@ docker-build-dev:
       --destination "$HARBOR_URL/$HARBOR_NEXCLIPPER_PROJECT/$APP_IMAGE_NAME:${APP_VERSION}"
       --destination "$HARBOR_URL/$HARBOR_NEXCLIPPER_PROJECT/$APP_IMAGE_NAME:latest"
       --destination "$HARBOR_URL/$HARBOR_NEXCLIPPER_PROJECT/$APP_IMAGE_NAME:${CI_COMMIT_SHORT_SHA}"
+  needs:
+    - job: code-build
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
 
@@ -82,10 +101,10 @@ deploy-nexclipper-cron-dev:
     - source /data/scripts/login-cluster.sh dev
   script:
     - "source /data/scripts/deploy.sh dev nc"
+  needs:
+    - job: docker-build-dev
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
-    - if: $CI_COMMIT_BRANCH =~ /\b^(issue|feature|bugfix|improvement).*$\b/
-      when: manual
 
 
 docker-build-stg:
