@@ -38,7 +38,20 @@ spec:
       - name: ${APP_IMAGE_NAME}
         image: ${IMG_TAG_TO_DEPLOY}
         imagePullPolicy: Always
-        resources: {}
+        resources:
+          limits:
+            cpu: 600m
+            memory: 512Mi
+          requests:
+            cpu: 400m
+            memory: 256Mi
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1002
+          capabilities:
+            drop:
+              - SETUID
+              - SETGID
         livenessProbe:
           tcpSocket:
             port: 5001
