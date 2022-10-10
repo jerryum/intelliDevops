@@ -10,6 +10,7 @@ How to add config:
 // 2. For value control (default, computed)
 // 3. For security
 import validateEnv from './validateEnv';
+import notificationSchedules from '../../init/notiSchedule.seeding.json';
 
 validateEnv();
 
@@ -37,5 +38,9 @@ export default {
     jwtSecretKey: process.env.NC_CRON_JWT_SECRET_KEY,
     sudory_x_auth_token: process.env.NC_CRON_SUDORY_X_AUTH_TOKEN || 'SUDORY',
     x_auth_token: process.env.NC_CRON_X_AUTH_TOKEN || 'CRON',
+  },
+  initialRecord: {
+    notificationUrl: process.env.NC_CRON_NOTI_URL,
+    notificationSchedules,
   },
 };
