@@ -9,6 +9,7 @@ class SchedulerController {
   public createCronSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, summary, cronTab, apiUrl, apiBody, reRunRequire, timezone, accountId, clusterId } = req.body;
+      const apiType = req.body.apiType || 'post';
       let scheduleFrom = req.body.scheduleFrom;
       let scheduleTo = req.body.scheduleTo;
       if (scheduleFrom == '') scheduleFrom = null;
@@ -17,6 +18,7 @@ class SchedulerController {
         name,
         summary,
         cronTab,
+        apiType,
         apiUrl,
         apiBody,
         scheduleFrom,

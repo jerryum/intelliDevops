@@ -12,6 +12,7 @@ export interface ISchedule {
   updatedAt: Date;
   cancelledAt: Date;
   scheduleApiUrl: string;
+  scheduleApiType: string;
   scheduleCronTab: string;
   scheduleApiBody: Object;
   scheduleFrom: Date;

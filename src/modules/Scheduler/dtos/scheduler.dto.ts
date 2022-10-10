@@ -6,6 +6,9 @@ export class CreateCronScheduleDto {
   public cronTab: string;
 
   @IsNotEmpty()
+  public apiType: string;
+
+  @IsNotEmpty()
   public apiUrl: string;
 
   @IsNotEmpty()

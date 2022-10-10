@@ -258,7 +258,8 @@ class SchedulerService {
 
     try {
       //const x_auth_token = config.auth.sudory_x_auth_token;
-      const { name, summary, apiBody, apiUrl, cronTab, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId } = CronRequestData;
+      const { name, summary, apiBody, apiUrl, apiType, cronTab, scheduleFrom, scheduleTo, reRunRequire, timezone, accountId, clusterId } =
+        CronRequestData;
       //console.log (CronRequestData);
       let apiMessage = {};
       let responseData;
@@ -277,19 +278,71 @@ class SchedulerService {
         function () {
           console.log(`Job ${schedulerId} is inititaed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
 
-          axios.post(apiUrl, apiMessage).then(
-            response => {
-              const status = response.data.status;
-              responseData = response.data;
-              console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
-            },
-            error => {
-              //task.cancel();
-              console.log(
-                `Job ${schedulerId} failed due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`,
-              );
-            }, // error
-          ); // close of .then
+          switch (apiType) {
+            case 'POST':
+              axios.post(apiUrl, apiMessage).then(
+                response => {
+                  const status = response.data.status;
+                  responseData = response.data;
+                  console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
+                },
+                error => {
+                  //task.cancel();
+                  console.log(
+                    `Job ${schedulerId} failed due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`,
+                  );
+                }, // error
+              ); // close of .then
+              break;
+            case 'GET':
+              axios.get(apiUrl).then(
+                response => {
+                  const status = response.data.status;
+                  responseData = response.data;
+                  console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
+                },
+                error => {
+                  //task.cancel();
+                  console.log(
+                    `Job ${schedulerId} failed due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`,
+                  );
+                }, // error
+              ); // close of .then
+              break;
+            case 'PUT':
+              axios.put(apiUrl, apiMessage).then(
+                response => {
+                  const status = response.data.status;
+                  responseData = response.data;
+                  console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
+                },
+                error => {
+                  //task.cancel();
+                  console.log(
+                    `Job ${schedulerId} failed due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`,
+                  );
+                }, // error
+              ); // close of .then
+              break;
+            case 'DELETE':
+              axios.delete(apiUrl).then(
+                response => {
+                  const status = response.data.status;
+                  responseData = response.data;
+                  console.log(`Job ${schedulerId} is processed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId} `, status);
+                },
+                error => {
+                  //task.cancel();
+                  console.log(
+                    `Job ${schedulerId} failed due to unexpoected error: ${error}, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`,
+                  );
+                }, // error
+              ); // close of .then
+
+              break;
+            default:
+              break;
+          }
         }, // close of schedulejob function
       ); //close of scheduleJob
 
@@ -299,6 +352,7 @@ class SchedulerService {
           scheduleName: name,
           scheduleSummary: summary,
           scheduleCronTab: cronTab,
+          scheduleApiType: apiType,
           scheduleApiUrl: apiUrl,
           scheduleApiBody: apiBody,
           scheduleFrom: scheduleFrom,

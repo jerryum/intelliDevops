@@ -8,6 +8,7 @@ export type ScheduleCreationAttributes = Optional<
   | 'scheduleName'
   | 'scheduleSummary'
   | 'scheduleApiUrl'
+  | 'scheduleApiType'
   | 'scheduleCronTab'
   | 'scheduleApiBody'
   | 'scheduleFrom'
@@ -30,6 +31,7 @@ export class ScheduleModel extends Model<ISchedule, ScheduleCreationAttributes> 
   public createdAt: Date;
   public updatedAt: Date;
   public cancelledAt: Date;
+  public scheduleApiType: string;
   public scheduleApiUrl: string;
   public scheduleCronTab: string;
   public scheduleApiBody: JSON;
@@ -82,6 +84,10 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
 
       scheduleApiUrl: {
         type: DataTypes.STRING(500),
+      },
+
+      scheduleApiType: {
+        type: DataTypes.STRING(50),
       },
 
       scheduleCronTab: {
