@@ -1,6 +1,6 @@
 {
   "name": "nexclipper-cron",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "description": "Cron service calling APIs",
   "author": "",
   "license": "ISC",

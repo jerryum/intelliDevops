@@ -277,9 +277,9 @@ class SchedulerService {
         { start: scheduleFrom, end: scheduleTo, rule: cronTab, tz: timezone },
         function () {
           console.log(`Job ${schedulerId} is inititaed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
-
+          console.log(apiType);
           switch (apiType) {
-            case 'POST':
+            case 'POST' || 'post':
               axios.post(apiUrl, apiMessage).then(
                 response => {
                   const status = response.data.status;
@@ -294,7 +294,7 @@ class SchedulerService {
                 }, // error
               ); // close of .then
               break;
-            case 'GET':
+            case 'GET' || 'get':
               axios.get(apiUrl).then(
                 response => {
                   const status = response.data.status;
@@ -309,7 +309,7 @@ class SchedulerService {
                 }, // error
               ); // close of .then
               break;
-            case 'PUT':
+            case 'PUT' || 'put':
               axios.put(apiUrl, apiMessage).then(
                 response => {
                   const status = response.data.status;
@@ -324,7 +324,7 @@ class SchedulerService {
                 }, // error
               ); // close of .then
               break;
-            case 'DELETE':
+            case 'DELETE' || 'delete':
               axios.delete(apiUrl).then(
                 response => {
                   const status = response.data.status;
@@ -341,6 +341,7 @@ class SchedulerService {
 
               break;
             default:
+              console.log('Wrong api type', apiType);
               break;
           }
         }, // close of schedulejob function
