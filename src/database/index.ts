@@ -49,10 +49,15 @@ const DB = {
 DB.sequelize
   .sync({ force: false })
   .then(async () => {
+    const event1pre = 'DROP EVENT IF EXISTS nc_cron.ev_delete_cancalled_schedule';
+    const event1 = `CREATE EVENT nc_cron.ev_delete_cancalled_schedule ON SCHEDULE EVERY '1' DAY
+                    STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY)
+                    DO DELETE FROM nc_cron.Scheduler where cancelled_at < now() - interval 7 DAY;`;
+    sequelize.query(event1pre);
+    sequelize.query(event1);
     const initialRecordService = new InitialRecordService();
     try {
       await initialRecordService.insertInitialRecords();
-
       await initialRecordService.updateScheduler();
       console.log('initialization success');
     } catch (e) {
