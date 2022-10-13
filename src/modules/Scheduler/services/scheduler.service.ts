@@ -106,6 +106,7 @@ class SchedulerService {
   public async getAllCronTaskByAccountId(accountId: string): Promise<ISchedule[]> {
     if (isEmpty(accountId)) throw new HttpException(400, 'Missing accountId');
 
+    /*  
     const scheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: accountId, scheduleStatus: 'AC' } });
     if (!scheduledCronTasks)
       throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
@@ -126,7 +127,7 @@ class SchedulerService {
         );
       }
     });
-
+    */
     const allScheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { accountId: accountId } });
     if (!allScheduledCronTasks)
       throw new HttpException(404, `can't find the scheduled task under the account id ${accountId} information in the database`);
