@@ -277,7 +277,6 @@ class SchedulerService {
         { start: scheduleFrom, end: scheduleTo, rule: cronTab, tz: timezone },
         function () {
           console.log(`Job ${schedulerId} is inititaed, name: ${name}, crontab: ${cronTab}, clusterId: ${clusterId}`);
-          console.log(apiType);
           switch (apiType) {
             case 'POST' || 'post':
               axios.post(apiUrl, apiMessage).then(

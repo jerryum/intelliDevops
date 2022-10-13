@@ -96,11 +96,21 @@ class App {
       res.send = c => {
         logger.info(`url is ${req.url}`);
         logger.info(`Status code is ${res.statusCode}`);
-        logger.info(`Request Body is ${JSON.stringify(req.body || {})}`);
-        logger.info(`Response Body is ${c}`);
+
+        if (config.logger.silenceResponse !== true) {
+          if ('password' in req.body) {
+            const req_new_body = req.body;
+            req_new_body.password = '********';
+            logger.info(`Request Body is ${JSON.stringify(req_new_body || {})}`);
+          } else {
+            logger.info(`Request Body is ${JSON.stringify(req.body || {})}`);
+          }
+          logger.info(`Response Body is ${c}`);
+        }
         res.send = send;
         return res.send(c);
       };
+
       next();
     });
   }

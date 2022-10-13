@@ -34,6 +34,9 @@ export default {
       poolMax: Number(process.env.NC_CRON_DB_CONFIG_POOL_MAX),
     },
   },
+  logger: {
+    silenceResponse: process.env.NC_LARI_LOG_SILENCE_RESPONSE ? process.env.NC_LARI_LOG_SILENCE_RESPONSE === 'true' : false,
+  },
   auth: {
     jwtSecretKey: process.env.NC_CRON_JWT_SECRET_KEY,
     sudory_x_auth_token: process.env.NC_CRON_SUDORY_X_AUTH_TOKEN || 'SUDORY',
