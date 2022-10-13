@@ -101,7 +101,6 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
       scheduleFrom: {
         type: DataTypes.DATE(),
       },
-
       scheduleTo: {
         type: DataTypes.DATE(),
       },
@@ -122,6 +121,24 @@ export default function (sequelize: Sequelize): typeof ScheduleModel {
       },
     },
     {
+      indexes: [
+        {
+          unique: false,
+          fields: ['accountId'],
+        },
+        {
+          unique: false,
+          fields: ['clusterId'],
+        },
+        {
+          unique: false,
+          fields: ['scheduleId'],
+        },
+        {
+          unique: false,
+          fields: ['cancelledAt'],
+        },
+      ],
       tableName: 'Scheduler',
       modelName: 'Scheduler',
       sequelize,
