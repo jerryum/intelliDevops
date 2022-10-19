@@ -1,4 +1,4 @@
-# nexclipper-cron
+# nexclipper-alerthub
 
 <br/>
 
@@ -7,13 +7,13 @@
 ### Clone the repo.
 
 ```bash
-git clone https://github.com/NexClipper/nexclipper-cron.git
+git clone https://github.com/NexClipper/nexclipper-alerthub.git
 ```
 
 ### Goto the cloned project folder.
 
 ```shell
-cd nexclipper-cron
+cd nexclipper-alerthub
 ```
 
 <br /><br />
@@ -38,18 +38,24 @@ vim .env
 ```
 
 ```
-NC_CRON_PORT=5001
-NC_CRON_ENV=development
-# NC_CRON_DB_CONFIG_PORT=32758
-# NC_CRON_DB_CONFIG_HOST=137.184.88.85
-# NC_CRON_DB_CONFIG_USER=lari
-# NC_CRON_DB_CONFIG_PASSWORD=NexClipper
-# NC_CRON_DB_CONFIG_DB_NAME=nc_lari
-# NC_CRON_DB_CONFIG_POOL_MIN=1
-# NC_CRON_DB_CONFIG_POOL_MAX=5
-NC_CRON_LOG_FORMAT=combined
-NC_CRON_CORS_ORIGIN=true
-NC_CRON_CORS_CREDENTIALS=true
+NC_AH_PORT=5055
+NC_AH_ENV=development
+NC_AH_DB_CONFIG_PORT=3306
+NC_AH_DB_CONFIG_HOST=127.0.0.1
+NC_AH_DB_CONFIG_USER=
+NC_AH_DB_CONFIG_PASSWORD=
+NC_AH_DB_CONFIG_DB_NAME=ml_db
+NC_AH_DB_CONFIG_POOL_MIN=2
+NC_AH_DB_CONFIG_POOL_MAX=7
+NC_AH_LOG_FORMAT=combined
+NC_AH_CORS_ORIGIN=true
+NC_AH_CORS_CREDENTIALS=true
+NC_AH_JWT_SECRET_KEY=test123!
+NC_AH_SUDORY_X_AUTH_TOKEN=SUDORY
+NC_AH_X_AUTH_TOKEN=ALERTHUB
+NC_AH_WAIT_MS_SEC=300
+__ENV_ONLY_FOR_DEV_LOG_PATH=./log
+NC_AH_LOG_SILENCE_RESPONSE=true
 ```
 
 ### Run the app
