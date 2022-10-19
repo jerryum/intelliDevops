@@ -7,6 +7,8 @@ class AlertController {
 
   public processAlertManagerWebhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      console.log('-------------------------------req.body');
+      console.log(req.body);
       const { alertStatus, alertAnnotations, alertLabels } = req.body;
       const responseCronCreate = await this.alertService.processAlertManagerWebhook(alertStatus, alertAnnotations, alertLabels);
       res.status(200).json({ data: responseCronCreate, message: 'Schedule request has been initiated' });
