@@ -1,8 +1,8 @@
 {
-  "name": "nexclipper-cron",
-  "version": "0.9.8",
-  "description": "Cron service calling APIs",
-  "author": "",
+  "name": "nexclipper-alerthub",
+  "version": "0.0.1",
+  "description": "Receive/process/provide alerts",
+  "author": "NexClipper Inc.",
   "license": "ISC",
   "scripts": {
     "start": "cross-env NODE_ENV=production node dist/server.js",

@@ -1,9 +1,9 @@
 import DB from '@/database';
 import SchedulerService from '@/modules/Scheduler/services/scheduler.service';
 import { Exception } from 'handlebars';
-import config from "@/config";
-import { ISchedule } from "@common/interfaces/schedule.interface";
-import { v1 } from "uuid";
+import config from '@/config';
+import { ISchedule } from '@common/interfaces/schedule.interface';
+import { v1 } from 'uuid';
 /**
  * @memberof InitialRecordService
  */
@@ -13,32 +13,12 @@ class InitialRecordService {
 
   public async insertInitialRecords(): Promise<void> {
     // insert, update nc-notification schedule
-    const {notificationSchedules: notiScheduleList, notificationUrl: notiUrl} = config.initialRecord;
-    let notiScheduleDataList = [];
-
-    for (const scheduleObj of notiScheduleList) {
-      const scheduleData: ISchedule = await this.scheduler.findOne({ where: { scheduleName: scheduleObj.scheduleName } });
-
-      if (scheduleData) {
-        continue
-      }
-
-      let url = notiUrl + scheduleObj.scheduleUrlPath
-      let schedulerId = v1();
-
-      notiScheduleDataList.push({
-        ...scheduleObj,
-        scheduleApiUrl: url,
-        scheduleId: schedulerId,
-        createdAt: new Date(),
-      });
-    }
+    const notiScheduleDataList = [];
 
     try {
       await this.scheduler.bulkCreate(notiScheduleDataList, {
-          fields: ["scheduleName", "createdAt", "scheduleApiUrl", "scheduleId", "scheduleCronTab", "scheduleApiBody", "scheduleStatus", "reRunRequire"],
-        }
-      );
+        fields: ['scheduleName', 'createdAt', 'scheduleApiUrl', 'scheduleId', 'scheduleCronTab', 'scheduleApiBody', 'scheduleStatus', 'reRunRequire'],
+      });
     } catch (error) {
       throw new Exception(error);
     }

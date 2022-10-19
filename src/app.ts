@@ -32,7 +32,7 @@ class App {
 
   public listen() {
     this.app.listen(this.port, () => {
-      logger.info(`======= Nexclipper Cron ========`);
+      logger.info(`======= Nexclipper Alerthub ========`);
       logger.info(`======= ENV: ${this.env} =======`);
       logger.info(`🚀 NexClipper listening on the port ${this.port}`);
       logger.info(`=================================`);
@@ -75,8 +75,8 @@ class App {
     const options = {
       swaggerDefinition: {
         info: {
-          title: 'NEXCLIPPER-CRON',
-          version: '0.0.0',
+          title: 'NEXCLIPPER-ALERTHUB',
+          version: '0.0.1',
           description: 'API TESTING',
         },
       },
