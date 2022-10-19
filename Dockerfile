@@ -2,7 +2,7 @@
 FROM node:16-alpine as common-build-stage
 
 ENV WORKDIR=/usr/src/app/ \
-    NAME=nexclipper-cron \
+    NAME=nexclipper-alerthub \
     USER=nexclipperuser \
     USER_ID=1002 \
     GROUP=nexclipper
