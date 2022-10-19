@@ -7,5 +7,5 @@ if [[ -f /vault/secrets/ncdb-admin-login ]]; then
     export NC_AH_DB_CONFIG_PASSWORD="${NC_CRON_DB_CONFIG_PASSWORD}"
 fi
 
-npm run dev
+npm run start
 
