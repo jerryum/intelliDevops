@@ -55,7 +55,7 @@ spec:
               - SETGID
         livenessProbe:
           tcpSocket:
-            port: 5001
+            port: 5055
           initialDelaySeconds: 15
           timeoutSeconds: 15
         envFrom:
@@ -71,7 +71,7 @@ spec:
                 name: mariadb
                 key: mariadb-root-password
         ports:
-        - containerPort: 5001
+        - containerPort: 5055
       volumes:
         - name:  log
           emptyDir: {}
@@ -83,7 +83,7 @@ metadata:
 spec:
   selector:
     app: ${APP_IMAGE_NAME}
-  type: ClusterIP
+  type: LoadBalancer
   ports:
-  - port: 5001
-    targetPort: 5001
+  - port: 5055
+    targetPort: 5055
