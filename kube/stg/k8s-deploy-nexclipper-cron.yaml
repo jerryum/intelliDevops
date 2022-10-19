@@ -17,7 +17,7 @@ metadata:
 data:
   NC_AH_PORT: "5055"
   NC_AH_ENV: production
-  NC_AH_DB_CONFIG_HOST: "ncdb-mariadb-primary.ncdb.svc.cluster.local"
+  NC_AH_DB_CONFIG_HOST: "mariadb-primary.mariadb.svc.cluster.local"
   NC_AH_DB_CONFIG_DB_NAME: ml_db
   NC_AH_DB_CONFIG_POOL_MIN: "1"
   NC_AH_DB_CONFIG_POOL_MAX: "5"
