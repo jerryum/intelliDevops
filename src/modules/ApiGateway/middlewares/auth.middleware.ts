@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-import DB from '@/database';
+//import jwt from 'jsonwebtoken';
+//import DB from '@/database';
 import { HttpException } from '@/common/exceptions/HttpException';
 
 import config from 'config';
-import { IDataStoredInToken, IRequestWithUser } from '@/common/interfaces/party.interface';
+//import { IDataStoredInToken, IRequestWithUser } from '@/common/interfaces/party.interface';
 
 /**
  * Middleware to be used to authenticate a particular request.
