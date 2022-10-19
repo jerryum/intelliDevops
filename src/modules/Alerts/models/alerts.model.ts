@@ -3,19 +3,55 @@ import { IAlert } from '@/common/interfaces/alerts.interface';
 
 export type AlertCreationAttributes = Optional<
   IAlert,
-  'alertKey' | 'alertId' | 'alertName' | 'alertStatus' | 'alertLabels' | 'alertAnnotations' | 'createdAt' | 'updatedAt' | 'clusterId'
+  | 'alertKey'
+  | 'alertId'
+  | 'alertName'
+  | 'status'
+  | 'severity'
+  | 'container'
+  | 'endpoint'
+  | 'job'
+  | 'namespace'
+  | 'prometheus'
+  | 'service'
+  | 'externalUrl'
+  | 'instance'
+  | 'node'
+  | 'pod'
+  | 'description'
+  | 'summary'
+  | 'startsAt'
+  | 'endsAt'
+  | 'createdAt'
+  | 'updatedAt'
+  | 'clusterId'
+  | 'clusterName'
 >;
 
 export class AlertModel extends Model<IAlert, AlertCreationAttributes> implements IAlert {
   public alertKey: number;
   public alertId: string;
   public alertName: string;
-  public alertStatus: string;
-  public alertLabels: object;
-  public alertAnnotations: object;
+  public status: string;
+  public severity: string;
+  public container: string;
+  public endpoint: string;
+  public job: string;
+  public namespace: string;
+  public prometheus: string;
+  public service: string;
+  public externalUrl: string;
+  public instance: string;
+  public node: string;
+  public pod: string;
+  public description: string;
+  public summary: string;
+  public startsAt: Date;
+  public endsAt: Date;
   public createdAt: Date;
   public updatedAt: Date;
   public clusterId: string;
+  public clusterName: string;
 }
 
 export default function (sequelize: Sequelize): typeof AlertModel {
@@ -38,19 +74,82 @@ export default function (sequelize: Sequelize): typeof AlertModel {
         allowNull: false,
       },
 
-      alertStatus: {
+      status: {
         type: DataTypes.STRING(50),
         allowNull: true,
       },
 
-      alertAnnotations: {
-        type: DataTypes.JSON,
+      severity: {
+        type: DataTypes.STRING(50),
         allowNull: true,
       },
 
-      alertLabels: {
-        type: DataTypes.JSON,
+      container: {
+        type: DataTypes.STRING(100),
         allowNull: true,
+      },
+
+      endpoint: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      job: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      namespace: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      prometheus: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      service: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      externalUrl: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      instance: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      node: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      pod: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      description: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+
+      summary: {
+        type: DataTypes.STRING(500),
+        allowNull: true,
+      },
+
+      startsAt: {
+        type: DataTypes.DATE(),
+      },
+
+      endsAt: {
+        type: DataTypes.DATE(),
       },
 
       createdAt: {
@@ -63,6 +162,10 @@ export default function (sequelize: Sequelize): typeof AlertModel {
       },
 
       clusterId: {
+        type: DataTypes.STRING(50),
+      },
+
+      clusterName: {
         type: DataTypes.STRING(50),
       },
     },

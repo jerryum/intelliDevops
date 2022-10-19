@@ -2,20 +2,58 @@ import { HttpException } from '@/common/exceptions/HttpException';
 import DB from '@/database';
 //import config from '@/config';
 import { isEmpty } from '@/common/utils/util';
-//import { IAlert } from '@/common/interfaces/alerts.interface';
+import { IAlertCommonLabels } from '@/modules/Alerts/dtos/alerts.dto';
+import uuid from 'uuid';
 
 class AlertService {
   public alert = DB.Alert;
 
-  public async processAlertManagerWebhook(alertStatus: string, alertAnnotations: object, alertLabels: object): Promise<object> {
-    if (isEmpty(alertStatus)) throw new HttpException(400, 'Missing alert status');
-    if (isEmpty(alertAnnotations)) throw new HttpException(401, 'Missing alert status');
-    if (isEmpty(alertLabels)) throw new HttpException(401, 'Missing alert status');
-    /*
-    const scheduledCronTasks: ISchedule[] = await this.scheduler.findAll({ where: { clusterId: clusterId, scheduleStatus: 'AC' } });
-    if (!scheduledCronTasks)
-      throw new HttpException(404, `can't find the scheduled task under the cluster id ${clusterId} information in the database`);
-*/
+  public async processAlertManagerWebhook(
+    receiver: string,
+    status: string,
+    alerts: any,
+    groupLabels: object,
+    commonLabels: IAlertCommonLabels,
+    commonAnnotations: object,
+    externalURL: string,
+    version: string,
+    groupkey: object,
+  ): Promise<object> {
+    if (isEmpty(status) || isEmpty(alerts) || isEmpty(groupLabels) || isEmpty(commonLabels))
+      throw new HttpException(400, 'Missing kep data of alerts');
+
+    const alertId = uuid.v1();
+    const bulkCreateSQL = [];
+
+    for (let i = 0; alerts.length > i; i++) {
+      console.log('i', i);
+      const createSQL = {
+        alertId: alertId,
+        alertName: commonLabels.alertname,
+        clusterName: commonLabels.clusterName || '',
+        clusterId: commonLabels.clusterUuid || '',
+        container: commonLabels.container || '',
+        endpoint: commonLabels.endpoint || '',
+        job: commonLabels.job || '',
+        namespace: commonLabels.namespace || '',
+        service: commonLabels.service || '',
+        severity: commonLabels.severity || '',
+        externalUrl: externalURL || '',
+        status: alerts[i].status || '',
+        instance: alerts[i].labels.instance || '',
+        node: alerts[i].labels.node || '',
+        pod: alerts[i].labels.pod || '',
+        description: alerts[i].annotations.description || '',
+        summary: alerts[i].annotations.summary || '',
+        startsAt: alerts[i].startsAt || null,
+        endsAt: alerts[i].endsAt || null,
+      };
+      console.log('creatSQL', createSQL);
+      bulkCreateSQL[i] = createSQL;
+    }
+    const createAlert = await this.alert.bulkCreate(bulkCreateSQL);
+    if (!createAlert) throw new HttpException(500, `error to insert the alert data to DB`);
+
     return;
   }
 }

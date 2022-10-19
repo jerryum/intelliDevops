@@ -103,7 +103,6 @@ class App {
             req_new_body.password = '********';
             logger.info(`Request Body is ${JSON.stringify(req_new_body || {})}`);
           } else {
-            logger.info(`Request is ${req}`);
             logger.info(`Request Body is ${JSON.stringify(req.body || {})}`);
           }
           logger.info(`Response Body is ${c}`);

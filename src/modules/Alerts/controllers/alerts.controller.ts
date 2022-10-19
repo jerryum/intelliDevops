@@ -7,11 +7,21 @@ class AlertController {
 
   public processAlertManagerWebhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('-------------------------------req.body');
-      console.log(req.body);
-      const { alertStatus, alertAnnotations, alertLabels } = req.body;
-      const responseCronCreate = await this.alertService.processAlertManagerWebhook(alertStatus, alertAnnotations, alertLabels);
-      res.status(200).json({ data: responseCronCreate, message: 'Schedule request has been initiated' });
+      const { receiver, status, groupLabels, commonLabels, commonAnnotations, externalURL, version, groupKey } = req.body;
+      let alerts = [];
+      alerts = req.body.alerts;
+      const responseCronCreate = await this.alertService.processAlertManagerWebhook(
+        receiver,
+        status,
+        alerts,
+        groupLabels,
+        commonLabels,
+        commonAnnotations,
+        externalURL,
+        version,
+        groupKey,
+      );
+      res.status(200).json({ data: responseCronCreate, message: 'Alertmanager webhook request is well processed' });
     } catch (error) {
       console.log(error);
       next(error);
