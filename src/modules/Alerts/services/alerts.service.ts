@@ -3,7 +3,6 @@ import DB from '@/database';
 //import config from '@/config';
 import { isEmpty } from '@/common/utils/util';
 import { IAlertCommonLabels } from '@/modules/Alerts/dtos/alerts.dto';
-import uuid from 'uuid';
 
 class AlertService {
   public alert = DB.Alert;
@@ -21,10 +20,16 @@ class AlertService {
   ): Promise<object> {
     if (isEmpty(alerts)) throw new HttpException(400, 'Missing data of alerts');
 
+    const uuid = require('uuid');
     const alertId = uuid.v1();
     const bulkCreateSQL = [];
 
     for (let i = 0; alerts.length > i; i++) {
+      console.log('alert annotations', JSON.parse(JSON.stringify(alerts[i].annotations)));
+      console.log('alert labels', JSON.parse(JSON.stringify(alerts[i].labels)));
+      const annotations = JSON.parse(JSON.stringify(alerts[i].annotations));
+      const labels = JSON.parse(JSON.stringify(alerts[i].labels));
+
       const createSQL = {
         alertId: alertId,
         alertName: commonLabels.alertname,
@@ -37,18 +42,18 @@ class AlertService {
         service: commonLabels.service || '',
         severity: commonLabels.severity || '',
         externalUrl: externalURL || '',
-        status: alerts[i].status || '',
-        instance: alerts[i].labels.instance || '',
-        node: alerts[i].labels.node || '',
-        pod: alerts[i].labels.pod || '',
-        description: alerts[i].annotations.description || '',
-        summary: alerts[i].annotations.summary || '',
+        status: status || '',
+        instance: labels.instance || '',
+        node: labels.node || '',
+        pod: labels.pod || '',
+        description: annotations.description || '',
+        summary: annotations.summary || '',
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
       };
       bulkCreateSQL[i] = createSQL;
     }
-    console.log(bulkCreateSQL);
+
     const createAlert = await this.alert.bulkCreate(bulkCreateSQL);
     if (!createAlert) throw new HttpException(500, `error to insert the alert data to DB`);
 
