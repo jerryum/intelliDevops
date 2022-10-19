@@ -14,7 +14,7 @@ import { IDataStoredInToken, IRequestWithUser } from '@/common/interfaces/party.
  */
 const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.header('X_AUTH_TOKEN');
+    const token = req.header('AUTHORIZATION');
     if (!token) {
       return res.status(400).json({ msg: 'Authorization denied. ' });
     }

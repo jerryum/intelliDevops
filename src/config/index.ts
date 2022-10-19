@@ -39,6 +39,6 @@ export default {
   auth: {
     jwtSecretKey: process.env.NC_AH_JWT_SECRET_KEY,
     sudory_x_auth_token: process.env.NC_AH_SUDORY_X_AUTH_TOKEN || 'SUDORY',
-    x_auth_token: process.env.NC_AH_X_AUTH_TOKEN || 'AH',
+    x_auth_token: process.env.NC_AH_X_AUTH_TOKEN || 'ALERTHUB',
   },
 };
