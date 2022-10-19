@@ -68,7 +68,7 @@ spec:
           - name: NC_AH_DB_CONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: ncdb-mariadb
+                name: mariadb
                 key: mariadb-root-password
         ports:
         - containerPort: 5001
@@ -83,6 +83,7 @@ metadata:
 spec:
   selector:
     app: ${APP_IMAGE_NAME}
+  type: ClusterIP
   ports:
   - port: 5001
     targetPort: 5001
