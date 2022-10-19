@@ -1,6 +1,5 @@
-import { IsString, IsNotEmpty, IsNumber, IsDate } from 'class-validator';
-import { json } from 'sequelize';
-
+//import { IsString, IsNotEmpty, IsNumber, IsDate } from 'class-validator';
+//import { json } from 'sequelize';
 export interface IAlertCommonLabels {
   alertname: string;
   clusterName: string;

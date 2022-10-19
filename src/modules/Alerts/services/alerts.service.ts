@@ -19,14 +19,12 @@ class AlertService {
     version: string,
     groupkey: object,
   ): Promise<object> {
-    if (isEmpty(status) || isEmpty(alerts) || isEmpty(groupLabels) || isEmpty(commonLabels))
-      throw new HttpException(400, 'Missing kep data of alerts');
+    if (isEmpty(alerts)) throw new HttpException(400, 'Missing data of alerts');
 
     const alertId = uuid.v1();
     const bulkCreateSQL = [];
 
     for (let i = 0; alerts.length > i; i++) {
-      console.log('i', i);
       const createSQL = {
         alertId: alertId,
         alertName: commonLabels.alertname,
@@ -48,9 +46,9 @@ class AlertService {
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
       };
-      console.log('creatSQL', createSQL);
       bulkCreateSQL[i] = createSQL;
     }
+    console.log(bulkCreateSQL);
     const createAlert = await this.alert.bulkCreate(bulkCreateSQL);
     if (!createAlert) throw new HttpException(500, `error to insert the alert data to DB`);
 
