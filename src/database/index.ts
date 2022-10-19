@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 import { logger } from '@/common/utils/logger';
-import schedulerModel from '@/modules/Scheduler/models/scheduler.model';
+import alertModel from '@/modules/Alerts/models/alerts.model';
 import config from 'config';
 import InitialRecordService from './initialRecord';
 
@@ -42,19 +42,21 @@ const sequelize = new Sequelize.Sequelize(database, user, password, {
 sequelize.authenticate();
 
 const DB = {
-  Scheduler: schedulerModel(sequelize),
+  Alert: alertModel(sequelize),
   sequelize, // connection instance (RAW queries)
 };
 
 DB.sequelize
   .sync({ force: false })
   .then(async () => {
+    /*
     const event1pre = 'DROP EVENT IF EXISTS nc_cron.ev_delete_cancalled_schedule';
     const event1 = `CREATE EVENT nc_cron.ev_delete_cancalled_schedule ON SCHEDULE EVERY '1' DAY
                     STARTS (TIMESTAMP(CURRENT_DATE) + INTERVAL 1 DAY)
                     DO DELETE FROM nc_cron.Scheduler where cancelled_at < now() - interval 7 DAY;`;
     sequelize.query(event1pre);
     sequelize.query(event1);
+    */
     const initialRecordService = new InitialRecordService();
     try {
       await initialRecordService.insertInitialRecords();

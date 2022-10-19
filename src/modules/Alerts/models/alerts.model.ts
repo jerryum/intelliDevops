@@ -3,14 +3,16 @@ import { IAlert } from '@/common/interfaces/alerts.interface';
 
 export type AlertCreationAttributes = Optional<
   IAlert,
-  'alertKey' | 'alertId' | 'alertName' | 'alertSummary' | 'createdAt' | 'updatedAt' | 'clusterId'
+  'alertKey' | 'alertId' | 'alertName' | 'alertStatus' | 'alertLabels' | 'alertAnnotations' | 'createdAt' | 'updatedAt' | 'clusterId'
 >;
 
 export class AlertModel extends Model<IAlert, AlertCreationAttributes> implements IAlert {
   public alertKey: number;
   public alertId: string;
   public alertName: string;
-  public alertSummary: string;
+  public alertStatus: string;
+  public alertLabels: object;
+  public alertAnnotations: object;
   public createdAt: Date;
   public updatedAt: Date;
   public clusterId: string;
@@ -36,8 +38,18 @@ export default function (sequelize: Sequelize): typeof AlertModel {
         allowNull: false,
       },
 
-      alertSummary: {
-        type: DataTypes.STRING(500),
+      alertStatus: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+      },
+
+      alertAnnotations: {
+        type: DataTypes.JSON,
+        allowNull: true,
+      },
+
+      alertLabels: {
+        type: DataTypes.JSON,
         allowNull: true,
       },
 
@@ -58,11 +70,11 @@ export default function (sequelize: Sequelize): typeof AlertModel {
       indexes: [
         {
           unique: false,
-          fields: ['alertId'],
+          fields: ['alert_Id'],
         },
         {
           unique: false,
-          fields: ['clusterId'],
+          fields: ['cluster_Id'],
         },
       ],
       tableName: 'Alert',
