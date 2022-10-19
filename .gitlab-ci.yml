@@ -1,6 +1,6 @@
 variables:
-  APP_IMAGE_NAME: "nexclipper-cron"
-  APP_VERSION: "0.9.8"
+  APP_IMAGE_NAME: "nexclipper-alerthub"
+  APP_VERSION: "0.0.1"
 
 default:
   tags:
@@ -91,7 +91,7 @@ docker-build-dev:
   rules:
     - if: $CI_COMMIT_BRANCH == "develop"
 
-deploy-nexclipper-cron-dev:
+deploy-nexclipper-alerthub-dev:
   stage: dev
   image: repo.nexclipper.io/nexclipper/helm-kubectl:latest
   variables:
@@ -130,7 +130,7 @@ docker-build-stg:
   rules:
     - if: $CI_COMMIT_BRANCH == "staging" 
 
-deploy-nexclipper-cron-stg:
+deploy-nexclipper-alerthub-stg:
   stage: stg
   image: repo.nexclipper.io/nexclipper/helm-kubectl:latest
   variables:
