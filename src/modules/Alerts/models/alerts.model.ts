@@ -26,6 +26,7 @@ export type AlertCreationAttributes = Optional<
   | 'updatedAt'
   | 'clusterId'
   | 'clusterName'
+  | 'nodeMetricKey'
 >;
 
 export class AlertModel extends Model<IAlert, AlertCreationAttributes> implements IAlert {
@@ -52,6 +53,7 @@ export class AlertModel extends Model<IAlert, AlertCreationAttributes> implement
   public updatedAt: Date;
   public clusterId: string;
   public clusterName: string;
+  public nodeMetricKey: number;
 }
 
 export default function (sequelize: Sequelize): typeof AlertModel {
@@ -167,6 +169,10 @@ export default function (sequelize: Sequelize): typeof AlertModel {
 
       clusterName: {
         type: DataTypes.STRING(50),
+      },
+
+      nodeMetricKey: {
+        type: DataTypes.INTEGER,
       },
     },
     {

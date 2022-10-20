@@ -22,4 +22,5 @@ export interface IAlert {
   updatedAt: Date;
   clusterId: string;
   clusterName: string;
+  nodeMetricKey: number;
 }

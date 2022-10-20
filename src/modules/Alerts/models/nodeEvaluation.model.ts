@@ -3,7 +3,7 @@ import { INodeEvaluation } from '@/common/interfaces/nodeEvaluation.interface';
 
 export type NodeEvaluationCreationAttributes = Optional<
   INodeEvaluation,
-  'nodeEvaluationKey' | 'nodeName' | 'nodeAnonamlyEvaluaton' | 'createdAt' | 'evaluatedAt'
+  'nodeEvaluationKey' | 'nodeName' | 'nodeAnonamlyEvaluaton' | 'createdAt' | 'evaluatedAt' | 'nodeMetricKey'
 >;
 
 export class NodeEvaluationModel extends Model<INodeEvaluation, NodeEvaluationCreationAttributes> implements INodeEvaluation {
@@ -12,6 +12,7 @@ export class NodeEvaluationModel extends Model<INodeEvaluation, NodeEvaluationCr
   public nodeName: string;
   public nodeAnonamlyEvaluaton: boolean;
   public evaluatedAt: Date;
+  public nodeMetricKey: number;
 }
 
 export default function (sequelize: Sequelize): typeof NodeEvaluationModel {
@@ -41,6 +42,10 @@ export default function (sequelize: Sequelize): typeof NodeEvaluationModel {
 
       evaluatedAt: {
         type: DataTypes.DATE(),
+      },
+
+      nodeMetricKey: {
+        type: DataTypes.INTEGER,
       },
     },
     {

@@ -3,9 +3,12 @@ import DB from '@/database';
 //import config from '@/config';
 import { isEmpty } from '@/common/utils/util';
 import { IAlertCommonLabels } from '@/modules/Alerts/dtos/alerts.dto';
+import { INodeEvaluation } from '@/common/interfaces/nodeEvaluation.interface';
 
+const { Op } = require('sequelize');
 class AlertService {
   public alert = DB.Alert;
+  public nodeEvaluation = DB.NodeEvaluationModel;
 
   public async processAlertManagerWebhook(
     receiver: string,
@@ -25,10 +28,27 @@ class AlertService {
     const bulkCreateSQL = [];
 
     for (let i = 0; alerts.length > i; i++) {
-      //console.log('alert annotations', JSON.parse(JSON.stringify(alerts[i].annotations)));
-      //console.log('alert labels', JSON.parse(JSON.stringify(alerts[i].labels)));
       const annotations = JSON.parse(JSON.stringify(alerts[i].annotations));
       const labels = JSON.parse(JSON.stringify(alerts[i].labels));
+      const currentTime = new Date();
+      const node = labels.node;
+      const startsAt = alerts[i].startsAt;
+      let nodeMetricKey;
+      if (status === 'firing') {
+        const searchQuery = { where: { evaluatedAt: { [Op.between]: [startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true } };
+        const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
+
+        if (nodeEvaluations) {
+          if (nodeEvaluations.length === 1) nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
+          else {
+            //more than 1 evaluation record, pull the most recent data
+            const nodeEvaluation = nodeEvaluations.reduce((a, b) => (a.evaluatedAt > b.evaluatedAt ? a : b));
+            nodeMetricKey = nodeEvaluation.nodeMetricKey;
+          }
+        } else {
+          nodeMetricKey = '';
+        }
+      }
 
       const createSQL = {
         alertId: alertId,
@@ -50,6 +70,7 @@ class AlertService {
         summary: annotations.summary || '',
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
+        nodeMetricKey: nodeMetricKey,
       };
       bulkCreateSQL[i] = createSQL;
     }
