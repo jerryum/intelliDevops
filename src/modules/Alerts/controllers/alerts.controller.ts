@@ -38,5 +38,17 @@ class AlertController {
       next(error);
     }
   };
+
+  public postFeedback = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { alertId, feedback, feedbackDescription } = req.body;
+      console.log(req.body);
+      const getAlerts = await this.alertService.postFeedback(alertId, feedback, feedbackDescription);
+      res.status(200).json({ data: getAlerts, message: 'Updated alerts feedback successfully' });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
 }
 export default AlertController;

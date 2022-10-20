@@ -1,1 +1,1 @@
-export type Platform = 'AWS' | 'baremetal' | 'kubernetes';
+export type feedbackType = 'POSITIVE' | 'NEGATIVE';

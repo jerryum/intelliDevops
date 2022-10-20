@@ -89,13 +89,14 @@ class AlertService {
     return alerts;
   }
 
-  public async postFeedback(alertId: string): Promise<object> {
+  public async postFeedback(alertId: string, feedback: string, feedbackDescription: string): Promise<object> {
     const readAlert: IAlert = await this.alert.findOne({ where: { alertId: alertId } });
-    if (readAlert) {
+    if (!readAlert) {
       throw new HttpException(407, `can't find alert`);
     }
-    const updateAlert = await this.alert.update({ nodeMetricKey: readAlert.nodeMetricKey }, { where: { alertId: alertId } });
-    return updateAlert;
+    await this.alert.update({ feedback: feedback, feedbackDescription: feedbackDescription }, { where: { alertId: alertId } });
+    const responseMessage = { alertId: alertId, feedback: feedback, feedbackDescription: feedbackDescription };
+    return responseMessage;
   }
 }
 
