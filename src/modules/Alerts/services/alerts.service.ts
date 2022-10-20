@@ -25,8 +25,8 @@ class AlertService {
     const bulkCreateSQL = [];
 
     for (let i = 0; alerts.length > i; i++) {
-      console.log('alert annotations', JSON.parse(JSON.stringify(alerts[i].annotations)));
-      console.log('alert labels', JSON.parse(JSON.stringify(alerts[i].labels)));
+      //console.log('alert annotations', JSON.parse(JSON.stringify(alerts[i].annotations)));
+      //console.log('alert labels', JSON.parse(JSON.stringify(alerts[i].labels)));
       const annotations = JSON.parse(JSON.stringify(alerts[i].annotations));
       const labels = JSON.parse(JSON.stringify(alerts[i].labels));
 

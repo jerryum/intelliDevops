@@ -1,8 +1,10 @@
 import Sequelize from 'sequelize';
 import { logger } from '@/common/utils/logger';
-import alertModel from '@/modules/Alerts/models/alerts.model';
+import AlertModel from '@/modules/Alerts/models/alerts.model';
+import NodeEvaluationModel from '@/modules/Alerts/models/nodeEvaluation.model';
 import config from 'config';
 import InitialRecordService from './initialRecord';
+import nodeEvaluationModel from '@/modules/Alerts/models/nodeEvaluation.model';
 
 const host = config.db.mariadb.host;
 const port = config.db.mariadb.port || 3306;
@@ -42,7 +44,8 @@ const sequelize = new Sequelize.Sequelize(database, user, password, {
 sequelize.authenticate();
 
 const DB = {
-  Alert: alertModel(sequelize),
+  Alert: AlertModel(sequelize),
+  NodeEvaluationModel: nodeEvaluationModel(sequelize),
   sequelize, // connection instance (RAW queries)
 };
 
