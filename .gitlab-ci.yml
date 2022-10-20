@@ -60,7 +60,7 @@ deploy-nexclipper-alerthub-commit:
     HARBOR_NEXCLIPPER_PROJECT: "nexclipper-dev"
   before_script:
     - echo -e "\nLogin to Kubernetes"
-    - source /data/scripts/login-cluster.sh dev
+    - source /data/scripts/login-cluster.sh ncml-dev
   script:
     - "source /data/scripts/deploy.sh dev nc ${CI_COMMIT_SHORT_SHA}"
   needs: 
