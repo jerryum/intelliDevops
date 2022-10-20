@@ -9,10 +9,10 @@ class MlmodelController {
     try {
       //console.log('req body----------', req.body);
       const from = req.query.from as string;
-      const to = req.query.from as string;
+      const to = req.query.to as string;
       const modelType = req.params.modelType;
       const responseCronCreate = await this.mlmodelService.getModelTrainingHisotry(from, to, modelType);
-      res.status(200).json({ data: responseCronCreate, message: 'Provide ML model training history' });
+      res.status(200).json({ data: responseCronCreate, message: 'Pull ML model training history' });
     } catch (error) {
       console.log(error);
       next(error);
