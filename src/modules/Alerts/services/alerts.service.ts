@@ -26,7 +26,6 @@ class AlertService {
     if (isEmpty(alerts)) throw new HttpException(400, 'Missing data of alerts');
 
     const uuid = require('uuid');
-    const alertId = uuid.v1();
     const bulkCreateSQL = [];
 
     for (let i = 0; alerts.length > i; i++) {
@@ -35,6 +34,7 @@ class AlertService {
       const currentTime = new Date();
       const node = labels.node;
       const startsAt = alerts[i].startsAt;
+      const alertId = uuid.v1();
       let nodeMetricKey;
       if (status === 'firing') {
         const searchQuery = { where: { evaluatedAt: { [Op.between]: [startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true } };
