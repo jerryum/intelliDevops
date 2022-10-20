@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 import { logger } from '@/common/utils/logger';
 import AlertModel from '@/modules/Alerts/models/alerts.model';
 import NodeEvaluationModel from '@/modules/Alerts/models/nodeEvaluation.model';
+import NodeTrainingModel from '@/modules/Mlmodels/models/nodeTraining.model';
 import config from 'config';
 import InitialRecordService from './initialRecord';
 import nodeEvaluationModel from '@/modules/Alerts/models/nodeEvaluation.model';
@@ -45,7 +46,9 @@ sequelize.authenticate();
 
 const DB = {
   Alert: AlertModel(sequelize),
-  NodeEvaluationModel: nodeEvaluationModel(sequelize),
+  NodeEvaluation: NodeEvaluationModel(sequelize),
+  NodeTraining: NodeTrainingModel(sequelize),
+
   sequelize, // connection instance (RAW queries)
 };
 

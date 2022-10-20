@@ -8,7 +8,7 @@ import { INodeEvaluation } from '@/common/interfaces/nodeEvaluation.interface';
 const { Op } = require('sequelize');
 class AlertService {
   public alert = DB.Alert;
-  public nodeEvaluation = DB.NodeEvaluationModel;
+  public nodeEvaluation = DB.NodeEvaluation;
 
   public async processAlertManagerWebhook(
     receiver: string,
