@@ -28,5 +28,15 @@ class AlertController {
       next(error);
     }
   };
+
+  public getFiringAlerts = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const getAlerts = await this.alertService.getFiringAlerts();
+      res.status(200).json({ data: getAlerts, message: 'Pullled firing alerts successfully' });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
 }
 export default AlertController;

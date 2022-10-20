@@ -14,6 +14,7 @@ class AlertRoute implements Routes {
 
   private initializeRoutes() {
     this.router.post('/webhook/alerts', authMiddleware, this.schedulerController.processAlertManagerWebhook);
+    this.router.get('/alerts', authMiddleware, this.schedulerController.getFiringAlerts);
   }
 }
 

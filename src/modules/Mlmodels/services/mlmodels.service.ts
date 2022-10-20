@@ -2,10 +2,12 @@ import DB from '@/database';
 import { INodeTrainingRead } from '@/modules/Mlmodels/dtos/mlmodels.dto';
 import { isEmpty } from 'lodash';
 import { HttpException } from '@/common/exceptions/HttpException';
+import { IAlert } from '@/common/interfaces/alerts.interface';
 
 const { Op } = require('sequelize');
 class MlmodelService {
   public nodeTraining = DB.NodeTraining;
+  public alert = DB.Alert;
 
   public async getModelTrainingHisotry(from: string, to: string, modelType: string): Promise<object> {
     //check from / to's format

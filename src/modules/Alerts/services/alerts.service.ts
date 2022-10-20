@@ -3,7 +3,9 @@ import DB from '@/database';
 //import config from '@/config';
 import { isEmpty } from '@/common/utils/util';
 import { IAlertCommonLabels } from '@/modules/Alerts/dtos/alerts.dto';
+import { IAlert } from '@/common/interfaces/alerts.interface';
 import { INodeEvaluation } from '@/common/interfaces/nodeEvaluation.interface';
+import alertsModel from '../models/alerts.model';
 
 const { Op } = require('sequelize');
 class AlertService {
@@ -79,6 +81,21 @@ class AlertService {
     if (!createAlert) throw new HttpException(500, `error to insert the alert data to DB`);
 
     return;
+  }
+
+  public async getFiringAlerts(): Promise<object> {
+    const alerts: IAlert[] = await this.alert.findAll();
+
+    return alerts;
+  }
+
+  public async postFeedback(alertId: string): Promise<object> {
+    const readAlert: IAlert = await this.alert.findOne({ where: { alertId: alertId } });
+    if (readAlert) {
+      throw new HttpException(407, `can't find alert`);
+    }
+    const updateAlert = await this.alert.update({ nodeMetricKey: readAlert.nodeMetricKey }, { where: { alertId: alertId } });
+    return updateAlert;
   }
 }
 
