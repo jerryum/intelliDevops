@@ -73,6 +73,7 @@ class AlertService {
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
         nodeMetricKey: nodeMetricKey,
+        labels: labels,
       };
       bulkCreateSQL[i] = createSQL;
     }
@@ -83,8 +84,13 @@ class AlertService {
     return;
   }
 
-  public async getFiringAlerts(): Promise<object> {
-    const alerts: IAlert[] = await this.alert.findAll();
+  public async getFiringAlerts(from: string, to: string): Promise<object> {
+    //check from / to's format
+    if (isEmpty(from) || isEmpty(to)) {
+      throw new HttpException(407, 'from and to required for ranged query');
+    }
+    const alertQuery = { where: { startsAt: { [Op.between]: [from, to] } } };
+    const alerts: IAlert[] = await this.alert.findAll(alertQuery);
 
     return alerts;
   }

@@ -31,7 +31,10 @@ class AlertController {
 
   public getFiringAlerts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const getAlerts = await this.alertService.getFiringAlerts();
+      const from = req.query.from as string;
+      const to = req.query.to as string;
+
+      const getAlerts = await this.alertService.getFiringAlerts(from, to);
       res.status(200).json({ data: getAlerts, message: 'Pullled firing alerts successfully' });
     } catch (error) {
       console.log(error);

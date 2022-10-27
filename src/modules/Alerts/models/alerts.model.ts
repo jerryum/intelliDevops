@@ -29,6 +29,7 @@ export type AlertCreationAttributes = Optional<
   | 'nodeMetricKey'
   | 'feedback'
   | 'feedbackDescription'
+  | 'labels'
 >;
 
 export class AlertModel extends Model<IAlert, AlertCreationAttributes> implements IAlert {
@@ -58,6 +59,7 @@ export class AlertModel extends Model<IAlert, AlertCreationAttributes> implement
   public nodeMetricKey: number;
   public feedback: string;
   public feedbackDescription: string;
+  public labels: JSON;
 }
 
 export default function (sequelize: Sequelize): typeof AlertModel {
@@ -186,6 +188,10 @@ export default function (sequelize: Sequelize): typeof AlertModel {
       feedbackDescription: {
         type: DataTypes.STRING(500),
       },
+
+      labels: {
+        type: DataTypes.JSON,
+      },
     },
     {
       indexes: [
@@ -196,6 +202,10 @@ export default function (sequelize: Sequelize): typeof AlertModel {
         {
           unique: false,
           fields: ['cluster_Id'],
+        },
+        {
+          unique: false,
+          fields: ['starts_at'],
         },
       ],
       tableName: 'Alert',

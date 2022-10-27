@@ -25,4 +25,5 @@ export interface IAlert {
   nodeMetricKey: number;
   feedback: string;
   feedbackDescription: string;
+  labels: JSON;
 }
