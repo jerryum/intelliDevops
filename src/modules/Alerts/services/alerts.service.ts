@@ -46,16 +46,9 @@ class AlertService {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
-
           if (nodeEvaluations) {
-            if (nodeEvaluations.length === 1) nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
-            else {
-              //more than 1 evaluation record, pull the most recent data
-              //console.log(nodeEvaluations);
-              //const nodeEvaluation = nodeEvaluations.reduce((a, b) => (a.evaluatedAt > b.evaluatedAt ? a : b));
-              //nodeMetricKey = nodeEvaluation.nodeMetricKey;
-              nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
-            }
+            console.log(nodeEvaluations);
+            nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
           } else {
             nodeMetricKey = '';
           }
