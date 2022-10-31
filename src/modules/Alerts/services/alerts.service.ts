@@ -55,6 +55,9 @@ class AlertService {
           }
         }
       }
+      console.log('Labels', JSON.stringify(alerts[i].labels));
+      console.log('Annotations', JSON.stringify(alerts[i].annotations));
+      console.log('CommonLabels', alerts[i].commonLabels);
 
       const createSQL = {
         alertId: alertId,

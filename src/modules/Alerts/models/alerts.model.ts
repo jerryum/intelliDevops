@@ -79,7 +79,7 @@ export default function (sequelize: Sequelize): typeof AlertModel {
 
       alertName: {
         type: DataTypes.STRING(100),
-        allowNull: false,
+        allowNull: true,
       },
 
       status: {
