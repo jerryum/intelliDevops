@@ -35,6 +35,8 @@ class AlertService {
       const node = labels.node || '';
       const startsAt = alerts[i].startsAt;
       const alertId = uuid.v1();
+      const processedCommonLabels = JSON.parse(JSON.stringify(alerts[i].commonLabels));
+      console.log(processedCommonLabels);
 
       let nodeMetricKey;
 
