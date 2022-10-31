@@ -1,7 +1,7 @@
 export interface INodeEvaluation {
   nodeEvaluationKey: number;
   nodeName: string;
-  nodeAnonamlyEvaluaton: boolean;
+  nodeAnomalyEvaluaton: boolean;
   nodeMetricKey: number;
   createdAt: Date;
   evaluatedAt: Date;
