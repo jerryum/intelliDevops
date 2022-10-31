@@ -32,23 +32,27 @@ class AlertService {
       const annotations = JSON.parse(JSON.stringify(alerts[i].annotations));
       const labels = JSON.parse(JSON.stringify(alerts[i].labels));
       const currentTime = new Date();
-      const node = labels.node;
+      const node = labels.node || '';
       const startsAt = alerts[i].startsAt;
       const alertId = uuid.v1();
-      let nodeMetricKey;
-      if (status === 'firing') {
-        const searchQuery = { where: { evaluatedAt: { [Op.between]: [startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true } };
-        const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
 
-        if (nodeEvaluations) {
-          if (nodeEvaluations.length === 1) nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
-          else {
-            //more than 1 evaluation record, pull the most recent data
-            const nodeEvaluation = nodeEvaluations.reduce((a, b) => (a.evaluatedAt > b.evaluatedAt ? a : b));
-            nodeMetricKey = nodeEvaluation.nodeMetricKey;
+      let nodeMetricKey;
+
+      if (node != '') {
+        if (status === 'firing') {
+          const searchQuery = { where: { evaluatedAt: { [Op.between]: [startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true } };
+          const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
+
+          if (nodeEvaluations) {
+            if (nodeEvaluations.length === 1) nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
+            else {
+              //more than 1 evaluation record, pull the most recent data
+              const nodeEvaluation = nodeEvaluations.reduce((a, b) => (a.evaluatedAt > b.evaluatedAt ? a : b));
+              nodeMetricKey = nodeEvaluation.nodeMetricKey;
+            }
+          } else {
+            nodeMetricKey = '';
           }
-        } else {
-          nodeMetricKey = '';
         }
       }
 
