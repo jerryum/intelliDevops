@@ -46,7 +46,8 @@ class AlertService {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
-          if (nodeEvaluations) {
+          console.log('Array length', nodeEvaluations.length);
+          if (nodeEvaluations.length > 0) {
             console.log(nodeEvaluations);
             nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
           } else {
@@ -78,7 +79,7 @@ class AlertService {
         summary: annotations.summary || '',
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
-        nodeMetricKey: nodeMetricKey,
+        nodeMetricKey: nodeMetricKey || '',
         labels: labels,
       };
       bulkCreateSQL[i] = createSQL;
