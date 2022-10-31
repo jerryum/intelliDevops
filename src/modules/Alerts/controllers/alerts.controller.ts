@@ -7,7 +7,6 @@ class AlertController {
 
   public processAlertManagerWebhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log('req body----------', req.body);
       const { receiver, status, groupLabels, commonLabels, commonAnnotations, externalURL, version, groupKey } = req.body;
       let alerts = [];
       alerts = req.body.alerts;

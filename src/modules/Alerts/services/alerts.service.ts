@@ -35,7 +35,7 @@ class AlertService {
       const node = labels.node || '';
       const alertId = uuid.v1();
 
-      let nodeMetricKey;
+      let nodeMetricKey = null;
 
       if (node != '') {
         if (status === 'firing') {
@@ -51,13 +51,10 @@ class AlertService {
             console.log(nodeEvaluations);
             nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
           } else {
-            nodeMetricKey = '';
+            //nodeMetricKey = '';
           }
         }
       }
-      console.log('Labels', JSON.stringify(alerts[i].labels));
-      console.log('Annotations', JSON.stringify(alerts[i].annotations));
-      console.log('CommonLabels', alerts[i].commonLabels);
 
       const createSQL = {
         alertId: alertId,
@@ -79,7 +76,7 @@ class AlertService {
         summary: annotations.summary || '',
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
-        nodeMetricKey: nodeMetricKey || '',
+        nodeMetricKey: nodeMetricKey || null,
         labels: labels,
       };
       bulkCreateSQL[i] = createSQL;
