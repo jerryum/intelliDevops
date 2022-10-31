@@ -33,14 +33,15 @@ class AlertService {
       const labels = JSON.parse(JSON.stringify(alerts[i].labels));
       const currentTime = new Date();
       const node = labels.node || '';
-      const startsAt = alerts[i].startsAt;
       const alertId = uuid.v1();
 
       let nodeMetricKey;
 
       if (node != '') {
         if (status === 'firing') {
-          const searchQuery = { where: { evaluatedAt: { [Op.between]: [startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true } };
+          const searchQuery = {
+            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true },
+          };
           const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
 
           if (nodeEvaluations) {
