@@ -41,15 +41,20 @@ class AlertService {
         if (status === 'firing') {
           const searchQuery = {
             where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true },
+            order: [['evaluatedAt', 'DESC']],
           };
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
 
           if (nodeEvaluations) {
             if (nodeEvaluations.length === 1) nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
             else {
               //more than 1 evaluation record, pull the most recent data
-              const nodeEvaluation = nodeEvaluations.reduce((a, b) => (a.evaluatedAt > b.evaluatedAt ? a : b));
-              nodeMetricKey = nodeEvaluation.nodeMetricKey;
+              //console.log(nodeEvaluations);
+              //const nodeEvaluation = nodeEvaluations.reduce((a, b) => (a.evaluatedAt > b.evaluatedAt ? a : b));
+              //nodeMetricKey = nodeEvaluation.nodeMetricKey;
+              nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
             }
           } else {
             nodeMetricKey = '';
