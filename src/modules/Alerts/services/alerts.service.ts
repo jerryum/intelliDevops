@@ -5,7 +5,7 @@ import { isEmpty } from '@/common/utils/util';
 import { IAlertCommonLabels } from '@/modules/Alerts/dtos/alerts.dto';
 import { IAlert } from '@/common/interfaces/alerts.interface';
 import { INodeEvaluation } from '@/common/interfaces/nodeEvaluation.interface';
-import alertsModel from '../models/alerts.model';
+//import alertsModel from '../models/alerts.model';
 
 const { Op } = require('sequelize');
 class AlertService {
@@ -50,8 +50,6 @@ class AlertService {
           if (nodeEvaluations.length > 0) {
             console.log(nodeEvaluations);
             nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
-          } else {
-            //nodeMetricKey = '';
           }
         }
       }
@@ -79,6 +77,7 @@ class AlertService {
         nodeMetricKey: nodeMetricKey || null,
         labels: labels,
       };
+      console.log(createSQL);
       bulkCreateSQL[i] = createSQL;
     }
 
