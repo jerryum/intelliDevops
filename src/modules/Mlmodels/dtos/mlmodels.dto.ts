@@ -38,4 +38,31 @@ export class INodeTrainingRead {
   public nodeFilesystemFilesExt4: number;
   public nodeFilesystemFilesTmpfs: number;
   public nodeMemoryMemtotalBytes: number;
+  public createdAt: Date;
+  public updatedAt: Date;
+}
+
+export class IPodTrainingRead {
+  public podTrainingKey: number;
+  public trainingTimestamp: Date;
+  public podCpuUsage: number;
+  public podMemoryUsage: number;
+  public podFileUsage: number;
+  public podFileIo: number;
+  public podNetworkError: number;
+  public podNetworkPacketDrop: number;
+  public containerCpuCfsThrottledSecondsTotal: number;
+  public containerCpuSystemSecondsTotal: number;
+  public containerCpuUsageSecondsTotal: number;
+  public containerCpuUserSecondsTotal: number;
+  public containerMemoryUsageBytes: number;
+  public containerMemoryWorkingSetBytes: number;
+  public containerNetworkTransmitBytesTotal: number;
+  public kubePodContainerInfo: number;
+  public kubePodContainerResourceLimits: number;
+  public kubePodContainerResourceRequests: number;
+  public kubePodContainerStatusReady: number;
+  public kubePodContainerStatusRunning: number;
+  public createdAt: Date;
+  public updatedAt: Date;
 }

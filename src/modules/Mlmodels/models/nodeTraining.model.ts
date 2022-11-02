@@ -42,6 +42,8 @@ export type NodeTrainingCreationAttributes = Optional<
   | 'nodeFilesystemFilesExt4'
   | 'nodeFilesystemFilesTmpfs'
   | 'nodeMemoryMemtotalBytes'
+  | 'createdAt'
+  | 'updatedAt'
 >;
 
 export class NodeTrainingModel extends Model<INodeTraining, NodeTrainingCreationAttributes> implements INodeTraining {
@@ -84,6 +86,8 @@ export class NodeTrainingModel extends Model<INodeTraining, NodeTrainingCreation
   public nodeFilesystemFilesExt4: number;
   public nodeFilesystemFilesTmpfs: number;
   public nodeMemoryMemtotalBytes: number;
+  public createdAt: Date;
+  public updatedAt: Date;
 }
 
 export default function (sequelize: Sequelize): typeof NodeTrainingModel {
@@ -246,6 +250,14 @@ export default function (sequelize: Sequelize): typeof NodeTrainingModel {
       nodeFilesystemFilesTmpfs: {
         type: DataTypes.DOUBLE,
         allowNull: false,
+      },
+      createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
+      updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
       },
     },
     {

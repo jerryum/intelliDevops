@@ -41,4 +41,6 @@ export interface INodeTraining {
   nodeFilesystemFilesExt4: number;
   nodeFilesystemFilesTmpfs: number;
   nodeMemoryMemtotalBytes: number;
+  createdAt: Date;
+  updatedAt: Date;
 }

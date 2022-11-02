@@ -1,5 +1,6 @@
 import DB from '@/database';
 import { INodeTrainingRead } from '@/modules/Mlmodels/dtos/mlmodels.dto';
+import { IPodTrainingRead } from '@/modules/Mlmodels/dtos/mlmodels.dto';
 import { isEmpty } from 'lodash';
 import { HttpException } from '@/common/exceptions/HttpException';
 import { IAlert } from '@/common/interfaces/alerts.interface';
@@ -7,6 +8,7 @@ import { IAlert } from '@/common/interfaces/alerts.interface';
 const { Op } = require('sequelize');
 class MlmodelService {
   public nodeTraining = DB.NodeTraining;
+  public podTraining = DB.PodTraining;
   public alert = DB.Alert;
 
   public async getModelTrainingHisotry(from: string, to: string, modelType: string): Promise<object> {
@@ -22,6 +24,9 @@ class MlmodelService {
       result = trainingHistoryNode;
     } else {
       //pod
+      const podQuery = { where: { trainingTimestamp: { [Op.between]: [from, to] } } };
+      const trainingHistoryPod: IPodTrainingRead[] = await this.podTraining.findAll(podQuery);
+      result = trainingHistoryPod;
     }
 
     return result;
