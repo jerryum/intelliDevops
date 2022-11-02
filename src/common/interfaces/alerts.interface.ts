@@ -23,6 +23,7 @@ export interface IAlert {
   clusterId: string;
   clusterName: string;
   nodeMetricKey: number;
+  podMetricKey: number;
   feedback: string;
   feedbackDescription: string;
   labels: JSON;

@@ -33,9 +33,12 @@ class AlertService {
       const labels = JSON.parse(JSON.stringify(alerts[i].labels));
       const currentTime = new Date();
       const node = labels.node || '';
+      const pod = labels.pod || '';
       const alertId = uuid.v1();
 
       let nodeMetricKey = null;
+      let podMetricKey = null;
+      let createSQL = {};
 
       if (node != '') {
         if (status === 'firing') {
@@ -54,7 +57,24 @@ class AlertService {
         }
       }
 
-      const createSQL = {
+      if (pod != '') {
+        if (status === 'firing') {
+          const searchQuery = {
+            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, podName: node, podAnomalyEvaluation: true },
+            order: [['evaluatedAt', 'DESC']],
+          };
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          const podEvaluations: IPodEvaluation[] = await this.podEvaluation.findAll(searchQuery);
+          console.log('Array length', podEvaluations.length);
+          if (podEvaluations.length > 0) {
+            console.log(podEvaluations);
+            podMetricKey = podEvaluations[0].podMetricKey;
+          }
+        }
+      }
+
+      createSQL = {
         alertId: alertId,
         alertName: labels.alertname || commonLabels.alertname,
         clusterName: labels.clusterName || commonLabels.clusterName || '',
@@ -75,6 +95,7 @@ class AlertService {
         startsAt: alerts[i].startsAt || null,
         endsAt: alerts[i].endsAt || null,
         nodeMetricKey: nodeMetricKey || null,
+        podMetricKey: podMetricKey || null,
         labels: labels,
       };
       console.log(createSQL);

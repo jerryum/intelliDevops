@@ -27,6 +27,7 @@ export type AlertCreationAttributes = Optional<
   | 'clusterId'
   | 'clusterName'
   | 'nodeMetricKey'
+  | 'podMetricKey'
   | 'feedback'
   | 'feedbackDescription'
   | 'labels'
@@ -57,6 +58,7 @@ export class AlertModel extends Model<IAlert, AlertCreationAttributes> implement
   public clusterId: string;
   public clusterName: string;
   public nodeMetricKey: number;
+  public podMetricKey: number;
   public feedback: string;
   public feedbackDescription: string;
   public labels: JSON;
@@ -178,6 +180,10 @@ export default function (sequelize: Sequelize): typeof AlertModel {
       },
 
       nodeMetricKey: {
+        type: DataTypes.INTEGER,
+      },
+
+      podMetricKey: {
         type: DataTypes.INTEGER,
       },
 
