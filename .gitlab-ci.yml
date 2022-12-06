@@ -34,7 +34,7 @@ code-build:
 docker-build-commit:
   stage: build-code
   variables:
-    HARBOR_NEXCLIPPER_PROJECT: "nexclipper-dev"
+    HARBOR_NEXCLIPPER_PROJECT: "nexclipper"
   image:
     name: gcr.io/kaniko-project/executor:v1.9.0-debug
     entrypoint: [""]
@@ -57,7 +57,7 @@ deploy-nexclipper-alerthub-commit:
   stage: build-code
   image: repo.nexclipper.io/nexclipper/helm-kubectl:latest
   variables:
-    HARBOR_NEXCLIPPER_PROJECT: "nexclipper-dev"
+    HARBOR_NEXCLIPPER_PROJECT: "nexclipper"
   before_script:
     - echo -e "\nLogin to Kubernetes"
     - source /data/scripts/login-cluster.sh ncml-dev
