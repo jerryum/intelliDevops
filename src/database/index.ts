@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 import { logger } from '@/common/utils/logger';
 import AlertModel from '@/modules/Alerts/models/alerts.model';
 import NodeEvaluationModel from '@/modules/Alerts/models/nodeEvaluation.model';
+import PodEvaluationModel from '@/modules/Alerts/models/podEvaluation.model';
 import NodeTrainingModel from '@/modules/Mlmodels/models/nodeTraining.model';
 import PodTrainingModel from '@/modules/Mlmodels/models/podTraining.model';
 import config from 'config';
@@ -47,6 +48,7 @@ sequelize.authenticate();
 const DB = {
   Alert: AlertModel(sequelize),
   NodeEvaluation: NodeEvaluationModel(sequelize),
+  PodEvaluation: PodEvaluationModel(sequelize),
   NodeTraining: NodeTrainingModel(sequelize),
   PodTraining: PodTrainingModel(sequelize),
 

@@ -51,8 +51,8 @@ class AlertService {
           const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
           console.log('Array length', nodeEvaluations.length);
           if (nodeEvaluations.length > 0) {
-            console.log(nodeEvaluations[0]);
             nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
+            console.log('nodeMetricKey', nodeMetricKey);
           }
         }
       }
@@ -68,8 +68,8 @@ class AlertService {
           const podEvaluations: IPodEvaluation[] = await this.podEvaluation.findAll(searchQuery);
           console.log('Array length', podEvaluations.length);
           if (podEvaluations.length > 0) {
-            console.log(podEvaluations[0]);
             podMetricKey = podEvaluations[0].podMetricKey;
+            console.log('podMetricKey', podMetricKey);
           }
         }
       }
