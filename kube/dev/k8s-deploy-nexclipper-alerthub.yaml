@@ -9,6 +9,7 @@ data:
   NC_AH_ENV: development
   NC_AH_DB_CONFIG_HOST: "mariadb-primary.mariadb.svc.cluster.local"
   NC_AH_DB_CONFIG_USER: root
+  NC_AH_DB_CONFIG_PORT: "3306"
   NC_AH_DB_CONFIG_DB_NAME: ml_db
   NC_AH_DB_CONFIG_POOL_MIN: "2"
   NC_AH_DB_CONFIG_POOL_MAX: "7"

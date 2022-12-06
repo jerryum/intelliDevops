@@ -68,7 +68,7 @@ DB.sequelize
     try {
       await initialRecordService.insertInitialRecords();
       await initialRecordService.updateScheduler();
-      console.log('initialization success');
+      console.log('DB initialization success');
     } catch (e) {
       console.log(e);
     }
