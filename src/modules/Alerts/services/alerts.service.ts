@@ -11,6 +11,7 @@ const { Op } = require('sequelize');
 class AlertService {
   public alert = DB.Alert;
   public nodeEvaluation = DB.NodeEvaluation;
+  public podEvaluation = DB.PodEvaluation;
 
   public async processAlertManagerWebhook(
     receiver: string,
@@ -49,7 +50,9 @@ class AlertService {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
-          console.log('Array length', nodeEvaluations.length);
+          console.log('node:', node);
+          console.log('nodeEvaluations', JSON.stringify(nodeEvaluations[0]));
+          console.log('Node Array length', nodeEvaluations.length);
           if (nodeEvaluations.length > 0) {
             nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
             console.log('nodeMetricKey', nodeMetricKey);
@@ -66,7 +69,7 @@ class AlertService {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           const podEvaluations: IPodEvaluation[] = await this.podEvaluation.findAll(searchQuery);
-          console.log('Array length', podEvaluations.length);
+          console.log('Pod Array length', podEvaluations.length);
           if (podEvaluations.length > 0) {
             podMetricKey = podEvaluations[0].podMetricKey;
             console.log('podMetricKey', podMetricKey);
