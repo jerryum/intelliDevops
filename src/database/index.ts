@@ -59,6 +59,13 @@ const DB = {
   sequelize, // connection instance (RAW queries)
 };
 
+DB.NodeEvaluation.hasMany(DB.Alert, { foreignKey: 'nodeMetricKey' });
+DB.Alert.belongsTo(DB.NodeEvaluation, { foreignKey: 'nodeMetricKey' });
+DB.PodEvaluation.hasMany(DB.Alert, { foreignKey: 'nodeMetricKey' });
+DB.Alert.belongsTo(DB.PodEvaluation, { foreignKey: 'nodeMetricKey' });
+DB.PvcEvaluation.hasMany(DB.Alert, { foreignKey: 'nodeMetricKey' });
+DB.Alert.belongsTo(DB.PvcEvaluation, { foreignKey: 'nodeMetricKey' });
+
 DB.sequelize
   .sync({ force: false })
   .then(async () => {

@@ -5,6 +5,9 @@ import { isEmpty } from '@/common/utils/util';
 import { IAlertCommonLabels } from '@/modules/Alerts/dtos/alerts.dto';
 import { IAlert } from '@/common/interfaces/alerts.interface';
 import { INodeEvaluation } from '@/common/interfaces/nodeEvaluation.interface';
+import { NodeEvaluationModel } from '@/modules/Alerts/models/nodeEvaluation.model';
+import { PodEvaluationModel } from '@/modules/Alerts/models/podEvaluation.model';
+import { PvcEvaluationModel } from '@/modules/Alerts/models/pvcEvaluation.model';
 //import alertsModel from '../models/alerts.model';
 
 const { Op } = require('sequelize');
@@ -44,55 +47,49 @@ class AlertService {
       let createSQL = {};
 
       if (node != '') {
-        if (status === 'firing') {
-          const searchQuery = {
-            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, nodeName: node, nodeAnomalyEvaluation: true },
-            order: [['evaluatedAt', 'DESC']],
-          };
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
-          console.log('node:', node);
-          console.log('nodeEvaluations', JSON.stringify(nodeEvaluations[0]));
-          console.log('Node Array length', nodeEvaluations.length);
-          if (nodeEvaluations.length > 0) {
-            nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
-            console.log('nodeMetricKey', nodeMetricKey);
-          }
+        const searchQuery = {
+          where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, nodeName: node },
+          order: [['evaluatedAt', 'DESC']],
+        };
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const nodeEvaluations: INodeEvaluation[] = await this.nodeEvaluation.findAll(searchQuery);
+        console.log('node:', node);
+        console.log('nodeEvaluations', JSON.stringify(nodeEvaluations[0]));
+        console.log('Node Array length', nodeEvaluations.length);
+        if (nodeEvaluations.length > 0) {
+          nodeMetricKey = nodeEvaluations[0].nodeMetricKey;
+          console.log('nodeMetricKey', nodeMetricKey);
         }
       }
 
       if (pod != '') {
-        if (status === 'firing') {
-          const searchQuery = {
-            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, podName: pod, podAnomalyEvaluation: true },
-            order: [['evaluatedAt', 'DESC']],
-          };
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          const podEvaluations: IPodEvaluation[] = await this.podEvaluation.findAll(searchQuery);
-          console.log('Pod Array length', podEvaluations.length);
-          if (podEvaluations.length > 0) {
-            podMetricKey = podEvaluations[0].podMetricKey;
-            console.log('podMetricKey', podMetricKey);
-          }
+        const searchQuery = {
+          where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, podName: pod },
+          order: [['evaluatedAt', 'DESC']],
+        };
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const podEvaluations: IPodEvaluation[] = await this.podEvaluation.findAll(searchQuery);
+        console.log('Pod Array length', podEvaluations.length);
+        if (podEvaluations.length > 0) {
+          podMetricKey = podEvaluations[0].podMetricKey;
+          console.log('podMetricKey', podMetricKey);
         }
       }
 
       if (pvc != '') {
-        if (status === 'firing') {
-          const searchQuery = {
-            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, pvcName: pvc, pvcAnomalyEvaluation: true },
-            order: [['evaluatedAt', 'DESC']],
-          };
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          const pvcEvaluations: IPvcEvaluation[] = await this.pvcEvaluation.findAll(searchQuery);
-          console.log('Pvc Array length', pvcEvaluations.length);
-          if (pvcEvaluations.length > 0) {
-            pvcMetricKey = pvcEvaluations[0].pvcMetricKey;
-            console.log('pvcMetricKey', pvcMetricKey);
-          }
+        const searchQuery = {
+          where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, pvcName: pvc },
+          order: [['evaluatedAt', 'DESC']],
+        };
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        const pvcEvaluations: IPvcEvaluation[] = await this.pvcEvaluation.findAll(searchQuery);
+        console.log('Pvc Array length', pvcEvaluations.length);
+        if (pvcEvaluations.length > 0) {
+          pvcMetricKey = pvcEvaluations[0].pvcMetricKey;
+          console.log('pvcMetricKey', pvcMetricKey);
         }
       }
 
@@ -137,7 +134,14 @@ class AlertService {
     if (isEmpty(from) || isEmpty(to)) {
       throw new HttpException(407, 'from and to required for ranged query');
     }
-    const alertQuery = { where: { startsAt: { [Op.between]: [from, to] } } };
+    const alertQuery = {
+      where: { startsAt: { [Op.between]: [from, to] } },
+      include: [
+        { model: NodeEvaluationModel, required: false },
+        { model: PodEvaluationModel, required: false },
+        { model: PvcEvaluationModel, required: false },
+      ],
+    };
     const alerts: IAlert[] = await this.alert.findAll(alertQuery);
 
     return alerts;
