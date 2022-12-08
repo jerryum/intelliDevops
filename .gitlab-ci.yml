@@ -1,7 +1,7 @@
 variables:
   APP_IMAGE_NAME: "nexclipper-alerthub"
-  APP_VERSION_DEV: "0.0.7"
-  APP_VERSION_STG: "0.0.7"
+  APP_VERSION_DEV: "0.0.8"
+  APP_VERSION_STG: "0.0.8"
 
 default:
   tags:

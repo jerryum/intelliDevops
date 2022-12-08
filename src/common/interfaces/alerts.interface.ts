@@ -14,6 +14,7 @@ export interface IAlert {
   instance: string;
   node: string;
   pod: string;
+  persistentVolumeClaim: string;
   description: string;
   summary: string;
   startsAt: Date;

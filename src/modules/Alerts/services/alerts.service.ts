@@ -35,10 +35,12 @@ class AlertService {
       const currentTime = new Date();
       const node = labels.node || '';
       const pod = labels.pod || '';
+      const pvc = labels.persistentvolumeclaim || '';
       const alertId = uuid.v1();
 
       let nodeMetricKey = null;
       let podMetricKey = null;
+      let pvcMetricKey = null;
       let createSQL = {};
 
       if (node != '') {
@@ -63,7 +65,7 @@ class AlertService {
       if (pod != '') {
         if (status === 'firing') {
           const searchQuery = {
-            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, podName: node, podAnomalyEvaluation: true },
+            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, podName: pod, podAnomalyEvaluation: true },
             order: [['evaluatedAt', 'DESC']],
           };
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -73,6 +75,23 @@ class AlertService {
           if (podEvaluations.length > 0) {
             podMetricKey = podEvaluations[0].podMetricKey;
             console.log('podMetricKey', podMetricKey);
+          }
+        }
+      }
+
+      if (pvc != '') {
+        if (status === 'firing') {
+          const searchQuery = {
+            where: { evaluatedAt: { [Op.between]: [alerts[i].startsAt, currentTime] }, pvcName: pvc, pvcAnomalyEvaluation: true },
+            order: [['evaluatedAt', 'DESC']],
+          };
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          const pvcEvaluations: IPvcEvaluation[] = await this.pvcEvaluation.findAll(searchQuery);
+          console.log('Pvc Array length', pvcEvaluations.length);
+          if (pvcEvaluations.length > 0) {
+            pvcMetricKey = pvcEvaluations[0].pvcMetricKey;
+            console.log('pvcMetricKey', pvcMetricKey);
           }
         }
       }
@@ -93,6 +112,7 @@ class AlertService {
         instance: labels.instance || '',
         node: labels.node || '',
         pod: labels.pod || '',
+        persistentVolumeClaim: labels.persistentVolumeClaim || '',
         description: annotations.description || '',
         summary: annotations.summary || '',
         startsAt: alerts[i].startsAt || null,

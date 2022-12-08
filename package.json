@@ -1,6 +1,6 @@
 {
   "name": "nexclipper-alerthub",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Receive/process/provide alerts",
   "author": "NexClipper Inc.",
   "license": "ISC",

@@ -18,6 +18,7 @@ export type AlertCreationAttributes = Optional<
   | 'instance'
   | 'node'
   | 'pod'
+  | 'persistentVolumeClaim'
   | 'description'
   | 'summary'
   | 'startsAt'
@@ -49,6 +50,7 @@ export class AlertModel extends Model<IAlert, AlertCreationAttributes> implement
   public instance: string;
   public node: string;
   public pod: string;
+  public persistentVolumeClaim: string;
   public description: string;
   public summary: string;
   public startsAt: Date;
@@ -140,6 +142,11 @@ export default function (sequelize: Sequelize): typeof AlertModel {
       },
 
       pod: {
+        type: DataTypes.STRING(100),
+        allowNull: true,
+      },
+
+      persistentVolumeClaim: {
         type: DataTypes.STRING(100),
         allowNull: true,
       },
