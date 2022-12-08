@@ -119,6 +119,7 @@ class AlertService {
         endsAt: alerts[i].endsAt || null,
         nodeMetricKey: nodeMetricKey || null,
         podMetricKey: podMetricKey || null,
+        pvcMetricKey: pvcMetricKey || null,
         labels: labels,
       };
       console.log(createSQL);
