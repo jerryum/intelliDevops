@@ -66,3 +66,17 @@ export class IPodTrainingRead {
   public createdAt: Date;
   public updatedAt: Date;
 }
+
+export class IPvcTrainingRead {
+  public pvcTrainingKey: number;
+  public trainingTimestamp: Date;
+  public pvcUtilization: number;
+  public pvcStatus: number;
+  public kubelet_volume_stats_available_bytes: number;
+  public kubelet_volume_stats_capacity_bytes: number;
+  public kube_persistentvolumeclaim_status_lost: number;
+  public kube_persistentvolumeclaim_status_pending: number;
+  public kube_persistentvolumeclaim_status_failed: number;
+  public createdAt: Date;
+  public updatedAt: Date;
+}
