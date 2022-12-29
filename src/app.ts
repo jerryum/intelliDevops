@@ -32,9 +32,9 @@ class App {
 
   public listen() {
     this.app.listen(this.port, () => {
-      logger.info(`======= Nexclipper Alerthub ========`);
+      logger.info(`======= IntelliDevops ========`);
       logger.info(`======= ENV: ${this.env} =======`);
-      logger.info(`🚀 NexClipper listening on the port ${this.port}`);
+      logger.info(`🚀 IntelliDevops listening on the port ${this.port}`);
       logger.info(`=================================`);
     });
     require('console-stamp')(console, {

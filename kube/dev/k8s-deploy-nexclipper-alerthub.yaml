@@ -5,22 +5,22 @@ metadata:
   labels:
     app: ${APP_IMAGE_NAME}
 data:
-  NC_AH_PORT: "5055"
-  NC_AH_ENV: development
-  NC_AH_DB_CONFIG_HOST: "mariadb-primary.mariadb.svc.cluster.local"
-  NC_AH_DB_CONFIG_USER: root
-  NC_AH_DB_CONFIG_PORT: "3306"
-  NC_AH_DB_CONFIG_DB_NAME: ml_db
-  NC_AH_DB_CONFIG_POOL_MIN: "2"
-  NC_AH_DB_CONFIG_POOL_MAX: "7"
-  NC_AH_JWT_SECRET_KEY: test123!
-  NC_AH_LOG_FORMAT: combined
-  NC_AH_CORS_ORIGIN: "true"
-  NC_AH_CORS_CREDENTIALS: "true"
-  NC_AH_SUDORY_X_AUTH_TOKEN: "SUDORY"
-  NC_AH_X_AUTH_TOKEN: "Bearer ALERTHUB"
-  NC_AH_WAIT_MS_SEC: "1"
-  NC_AH_LOG_SILENCE_RESPONSE: "true"
+  ID_PORT: "5055"
+  ID_ENV: development
+  ID_DB_CONFIG_HOST: "mariadb-primary.mariadb.svc.cluster.local"
+  ID_DB_CONFIG_USER: root
+  ID_DB_CONFIG_PORT: "3306"
+  ID_DB_CONFIG_DB_NAME: ml_db
+  ID_DB_CONFIG_POOL_MIN: "2"
+  ID_DB_CONFIG_POOL_MAX: "7"
+  ID_JWT_SECRET_KEY: test123!
+  ID_LOG_FORMAT: combined
+  ID_CORS_ORIGIN: "true"
+  ID_CORS_CREDENTIALS: "true"
+  ID_SUDORY_X_AUTH_TOKEN: "SUDORY"
+  ID_X_AUTH_TOKEN: "Bearer ALERTHUB"
+  ID_WAIT_MS_SEC: "1"
+  ID_LOG_SILENCE_RESPONSE: "true"
 
 ---
 apiVersion: apps/v1
@@ -66,7 +66,7 @@ spec:
           - name:  log
             mountPath:  /var/log
         env:
-          - name: NC_AH_DB_CONFIG_PASSWORD
+          - name: ID_DB_CONFIG_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: mariadb
